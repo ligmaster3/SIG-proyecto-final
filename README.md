@@ -1,8 +1,5 @@
 # SIG-proyecto-final
-C:\xampp\php\extras\ssl\cacert.pem
-C:\xampp\php\extras\ssl\cacert.pem
-C:\xampp\php\extras\ssl\cacert.pem
-C:\xampp\php\extras\ssl\cacert.pem
-C:\xampp\php\extras\ssl\cacert.pem
-C:\xampp\php\extras\ssl\cacert.pem
-C:\xampp\php\extras\ssl\cacert.pem
+# login de estudiantees y administradores unificado
+# mejorar prof visual  e visualizacion de datos
+# accionaes rapidas mejorar
+# unificar los admin

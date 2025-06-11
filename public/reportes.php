@@ -8,10 +8,7 @@ if (!isset($_SESSION['id_estudiante'])) {
     header('Location: login.php');
     exit();
 }
-
-// Crear instancia del controlador
-$reportesController = new ReportesController($conn);
-
+ 
 // Obtener fechas del filtro
 $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : date('Y-m-01');
 $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : date('Y-m-d');

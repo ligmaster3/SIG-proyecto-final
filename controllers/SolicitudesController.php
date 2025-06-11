@@ -45,62 +45,78 @@ class SolicitudesController
         }
     }
 
-    public function cancelarSolicitud($id_solicitud, $id_estudiante)
-    {
-        try {
-            // Verificar que la solicitud pertenece al estudiante y está pendiente
-            $stmt = $this->conn->prepare("SELECT * FROM solicitudes_libros 
-                                        WHERE id_solicitud = :id_solicitud 
-                                        AND id_estudiante = :id_estudiante 
-                                        AND estado = 'Pendiente'");
-            $stmt->bindParam(':id_solicitud', $id_solicitud);
-            $stmt->bindParam(':id_estudiante', $id_estudiante);
-            $stmt->execute();
-
-            if ($stmt->rowCount() == 0) {
-                throw new Exception("No se puede cancelar esta solicitud.");
-            }
-
-            // Actualizar estado de la solicitud
-            $update = $this->conn->prepare("UPDATE solicitudes_libros 
-                                        SET estado = 'Cancelada' 
-                                        WHERE id_solicitud = :id_solicitud");
-            $update->bindParam(':id_solicitud', $id_solicitud);
-            $update->execute();
-
-            // Devolver el libro al inventario
-            $stmt = $this->conn->prepare("SELECT id_libro FROM solicitudes_libros WHERE id_solicitud = :id_solicitud");
-            $stmt->bindParam(':id_solicitud', $id_solicitud);
-            $stmt->execute();
-            $solicitud = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $update = $this->conn->prepare("UPDATE libros 
-                                        SET cantidad_disponible = cantidad_disponible + 1 
-                                        WHERE id_libro = :id_libro");
-            $update->bindParam(':id_libro', $solicitud['id_libro']);
-            $update->execute();
-
-            return true;
-        } catch (PDOException $e) {
-            throw new Exception("Error al cancelar solicitud: " . $e->getMessage());
+    public function cancelarSolicitud($id_solicitud, $id_estudiante) {
+        // Verificar que la solicitud pertenece al estudiante y está pendiente
+        $sql = "SELECT estado FROM solicitudes WHERE id_solicitud = ? AND id_estudiante = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$id_solicitud, $id_estudiante]);
+        $solicitud = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$solicitud) {
+            throw new Exception("Solicitud no encontrada o no pertenece al estudiante");
         }
+        
+        if ($solicitud['estado'] != 'Pendiente') {
+            throw new Exception("Solo se pueden cancelar solicitudes pendientes");
+        }
+        
+        // Actualizar estado a cancelado
+        $sql = "UPDATE solicitudes SET estado = 'Cancelada', fecha_cancelacion = NOW() 
+                WHERE id_solicitud = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([$id_solicitud]);
     }
+
+    public function marcarComoEntregado($id_solicitud, $id_estudiante) {
+        // Verificar que la solicitud está en estado Disponible
+        $sql = "SELECT estado, fecha_disponible FROM solicitudes 
+                WHERE id_solicitud = ? AND id_estudiante = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$id_solicitud, $id_estudiante]);
+        $solicitud = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$solicitud) {
+            throw new Exception("Solicitud no encontrada o no pertenece al estudiante");
+        }
+        
+        if ($solicitud['estado'] != 'Disponible') {
+            throw new Exception("El libro no está disponible para retiro");
+        }
+        
+        // Verificar que no haya pasado la fecha límite de retiro
+        $fechaDisponible = new DateTime($solicitud['fecha_disponible']);
+        $fechaLimite = (clone $fechaDisponible)->modify('+3 days');
+        $hoy = new DateTime();
+        
+        if ($hoy > $fechaLimite) {
+            throw new Exception("El período de retiro ha expirado");
+        }
+        
+        // Actualizar estado a Entregado y establecer fechas
+        $sql = "UPDATE solicitudes SET 
+                estado = 'Entregado', 
+                fecha_entrega = NOW(), 
+                fehca_aprobacion = DATE_ADD(NOW(), INTERVAL 7 DAY)
+                WHERE id_solicitud = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([$id_solicitud]);
+    }
+    
 
     public function getEstadoBadgeClass($estado)
     {
-        switch ($estado) {
-            case 'Aprobada':
-                return 'bg-success';
-            case 'Rechazada':
-                return 'bg-danger';
-            case 'Entregado':
-                return 'bg-primary';
-            case 'Devuelto':
-                return 'bg-secondary';
-            case 'Cancelada':
-                return 'bg-dark';
-            default:
-                return 'bg-warning text-dark';
-        }
+        $clases = [
+        'Pendiente' => 'bg-warning',
+        'Aceptada' => 'bg-success',
+        'Rechazada' => 'bg-danger',
+        'Disponible' => 'bg-info',
+        'Entregado' => 'bg-primary',
+        'Devuelto' => 'bg-secondary',
+        'Cancelada' => 'bg-dark',
+        'Vencido' => 'bg-danger'
+    ];
+    
+    return $clases[$estado] ?? 'bg-secondary';
+
     }
 }
