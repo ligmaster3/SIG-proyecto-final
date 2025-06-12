@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != 1) {
 
 // Obtener el tipo de exportación
 $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
+// Generar código único para el reporte
+$codigo_reporte = strtoupper(uniqid('REP-'));
 
 try {
     switch ($tipo) {
@@ -114,54 +116,54 @@ try {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-        .header h1 {
-            color: #2c3e50;
-            margin: 0;
-        }
+    .header h1 {
+        color: #2c3e50;
+        margin: 0;
+    }
 
-        .header p {
-            color: #7f8c8d;
-            margin: 5px 0;
-        }
+    .header p {
+        color: #7f8c8d;
+        margin: 5px 0;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
 
-        th {
-            background-color: #3498db;
-            color: white;
-        }
+    th {
+        background-color: #3498db;
+        color: white;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #7f8c8d;
-            font-size: 12px;
-        }
+    .footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #7f8c8d;
+        font-size: 12px;
+    }
     </style>
 </head>
 
@@ -175,17 +177,17 @@ try {
         <thead>
             <tr>
                 <?php foreach ($cabeceras as $cabecera): ?>
-                    <th><?php echo htmlspecialchars($cabecera); ?></th>
+                <th><?php echo htmlspecialchars($cabecera); ?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($datos as $fila): ?>
-                <tr>
-                    <?php foreach ($fila as $valor): ?>
-                        <td><?php echo htmlspecialchars($valor); ?></td>
-                    <?php endforeach; ?>
-                </tr>
+            <tr>
+                <?php foreach ($fila as $valor): ?>
+                <td><?php echo htmlspecialchars($valor); ?></td>
+                <?php endforeach; ?>
+            </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
@@ -195,51 +197,69 @@ try {
     </div>
 
     <script>
-        window.onload = function() {
-            var doc = new jspdf.jsPDF();
+    window.onload = function() {
+        var doc = new jspdf.jsPDF();
 
-            // Título
-            doc.setFontSize(16);
-            doc.text('<?php echo $titulo; ?>', 14, 15);
+        // Agregar logo
+        // Agregar logo
+        doc.addImage('../src/assets/img/logoUnachi.jpg', 'JPEG', 14, 10, 25, 25);
 
-            // Fecha
-            doc.setFontSize(10);
-            doc.text('Fecha: <?php echo date('d/m/Y H:i:s'); ?>', 14, 22);
+        // Título principal
+        doc.setFontSize(16);
+        doc.setTextColor(44, 62, 80);
+        doc.text('Biblioteca CRUBA - Reporte', 45, 20);
 
-            // Tabla
-            doc.autoTable({
-                html: '#tablaDatos',
-                startY: 30,
-                theme: 'grid',
-                headStyles: {
-                    fillColor: [52, 152, 219],
-                    textColor: 255,
-                    fontSize: 10,
-                    fontStyle: 'bold'
-                },
-                bodyStyles: {
-                    fontSize: 9
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 245, 245]
-                },
-                styles: {
-                    cellPadding: 3,
-                    lineColor: [200, 200, 200],
-                    lineWidth: 0.1
-                },
-                margin: {
-                    top: 30
-                }
-            });
+        // Fecha
+        doc.setFontSize(10);
+        doc.setTextColor(44, 62, 80);
+        doc.text('Fecha: <?php echo date('d/m/Y H:i:s'); ?>', 45, 28);
 
-            // Pie de página
-            doc.setFontSize(8);
-            doc.text('Biblioteca CRUBA - Sistema de Gestión', 14, doc.internal.pageSize.height - 10);
+        // Código de reporte
+        doc.setFontSize(10);
+        doc.setTextColor(255, 0, 0);
+        doc.text('Código de reporte: <?php echo $codigo_reporte; ?>', 45, 36);
 
-            // Guardar PDF
-            doc.save('<?php echo strtolower(str_replace(' ', '_', $titulo)); ?>_<?php echo date('Y-m-d'); ?>.pdf');
-        };
+        // Datos del administrador
+        doc.setFontSize(10);
+        doc.setTextColor(44, 62, 80);
+        doc.text(
+            'Generado por: <?php echo addslashes(htmlspecialchars($_SESSION["user_name"] ?? "Administrador")); ?>',
+            45, 44);
+        // Tabla
+        doc.autoTable({
+            html: '#tablaDatos',
+            startY: 55,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [52, 152, 219],
+                textColor: 255,
+                fontSize: 10,
+                fontStyle: 'bold'
+            },
+            bodyStyles: {
+                fontSize: 9
+            },
+            alternateRowStyles: {
+                fillColor: [245, 245, 245]
+            },
+            styles: {
+                cellPadding: 3,
+                lineColor: [200, 200, 200],
+                lineWidth: 0.1
+            },
+            margin: {
+                top: 55
+            }
+        });
+
+
+        // Pie de página
+        doc.setFontSize(8);
+        doc.text('Biblioteca CRUBA - Sistema de Gestión', 14, doc.internal.pageSize.height - 10);
+        // Guardar PDF
+        doc.save('<?php echo strtolower(str_replace(' ', '_', $titulo)); ?>_<?php echo date('Y-m-d'); ?>.pdf');
+        alert('PDF generado y descargado exitosamente. Código de reporte: <?php echo $codigo_reporte; ?>');
+    };
     </script>
 </body>
 

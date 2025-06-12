@@ -38,12 +38,11 @@ if(isset($_SESSION['user_id'])) {
 
 <body>
     <div class="container">
+        <img src="src/assets/img/IMG_20250611_150709.jpg" alt="Logo Biblioteca" class="logoUniv">
         <div class="login-container">
             <h2 class="text-center mb-4">
                 <i class="bi bi-book"></i> Biblioteca CRUBA
             </h2>
-            <img src="src\assets\img\115881452_566833253987120_5272022735552340912_n.jpg" alt="Logo Biblioteca"
-                class="logo img-fluid mx-auto d-block mb-3" style="max-width: 150px;">
             <?php
                 // Mostrar mensaje de éxito si se cambió la foto
                 if (isset($_GET['success']) && $_GET['success']) {

@@ -47,6 +47,18 @@ body {
     margin-right: 15px;
    object-fit: contain;
 }
+.logoUniv {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -2;
+    /* max-width: 1750px; */
+    width: 100%;
+    -o-object-fit: contain;
+    object-fit: contain;
+    
+}
 
 .logo-text h1 {
     font-size: 24px;

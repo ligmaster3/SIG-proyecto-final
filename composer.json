@@ -4,9 +4,8 @@
   "type": "project",
   "require": {
     "php": ">=7.4",
-    "phpoffice/phpspreadsheet": "^1.29",
-    "dompdf/dompdf": "^2.0",
-    "tecnickcom/tcpdf": "^6.6"
+    "ext-pdo": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
@@ -26,6 +25,9 @@
     }
   },
   "config": {
+    "platform": {
+      "php": "7.4"
+    },
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "sort-packages": true
@@ -37,5 +39,7 @@
     "post-update-cmd": [
       "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
     ]
-  }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

@@ -41,6 +41,7 @@ try {
     <title>Biblioteca CRUBA - Mis Solicitudes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
         .badge-estado {
             font-size: 0.9rem;
@@ -303,17 +304,7 @@ try {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Activar el tab correspondiente si hay hash en la URL
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.location.hash) {
-                const tabTrigger = new bootstrap.Tab(document.querySelector(
-                    [data - bs - target = "${window.location.hash}"]
-                ));
-                tabTrigger.show();
-            }
-        });
-    </script>
+    
 </body>
 
 </html>
