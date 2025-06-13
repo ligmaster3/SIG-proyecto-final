@@ -23,17 +23,17 @@
                     <a class="nav-link" href="./admin_prestamos.php"><i class="bi bi-journal-text"></i> Mis</a>
                 </li>
 
-                <?php if(isset($_SESSION['user_id']) && $_SESSION['user_id'] == 1): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="./admin.php"><i class="bi bi-speedometer2"></i> Admin</a>
-                </li>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == 1): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./admin.php"><i class="bi bi-speedometer2"></i> Admin</a>
+                    </li>
                 <?php endif; ?>
             </ul>
             <ul class="navbar-nav ms-auto">
-                <?php if(isset($_SESSION['user_name'])): ?>
-                <li class="nav-item">
-                    <span class="nav-link"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                </li>
+                <?php if (isset($_SESSION['user_name'])): ?>
+                    <li class="nav-item">
+                        <span class="nav-link"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    </li>
                 <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar
