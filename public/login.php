@@ -2,7 +2,7 @@
 require_once '../config/config.php';
 session_start();
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cedula = $_POST['cedula'];
     $password = $_POST['password'];
 
@@ -12,11 +12,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bindParam(':cedula', $cedula);
         $stmt->execute();
 
-        if($stmt->rowCount() == 1) {
+        if ($stmt->rowCount() == 1) {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Verificar contraseña (en un sistema real debería estar hasheada)
-            if($password === 'password123') { // Contraseña de ejemplo
+            if ($password === 'password123') { // Contraseña de ejemplo
                 $_SESSION['user_id'] = $user['id_estudiante'];
                 $_SESSION['user_name'] = $user['nombre'];
                 $_SESSION['user_facultad'] = $user['facultad'];
@@ -25,7 +25,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Registrar entrada a la biblioteca solo para estudiantes
                 try {
                     registrarEntradaBiblioteca($user['id_estudiante'], $conn);
-                } catch(Exception $e) {
+                    $_SESSION['mensaje'] = "Entrada registrada correctamente.";
+                } catch (Exception $e) {
                     error_log("Error al registrar entrada: " . $e->getMessage());
                     header("Location: ../../index.php?error=entrada");
                     exit;
@@ -43,17 +44,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':cedula', $cedula);
             $stmt->execute();
 
-            if($stmt->rowCount() == 1) {
+            if ($stmt->rowCount() == 1) {
                 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 // Verificar contraseña para admin (podría ser diferente)
-                if($password === 'admin123') { // Contraseña de ejemplo para admin
+                if ($password === 'admin123') { // Contraseña de ejemplo para admin
                     $_SESSION['user_id'] = $admin['id_admin'];
                     $_SESSION['user_name'] = $admin['nombre'];
                     $_SESSION['user_type'] = 'administrador'; // Tipo de usuario
-                    
+
                     // Redirigir a dashboard de admin (puede ser diferente)
-                      header("Location: admin_prestamos.php");
+                    header("Location: admin_prestamos.php");
                     exit;
                 } else {
                     header("Location: ../../index.php?error=credenciales");
@@ -64,37 +65,70 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit;
             }
         }
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         die("Error: " . $e->getMessage());
     }
 }
 
-function registrarEntradaBiblioteca($id_estudiante, $conn) {
+function registrarEntradaBiblioteca($id_estudiante, $conn)
+{
     try {
+        // Validar que el estudiante existe
+        $stmt = $conn->prepare("SELECT id_estudiante FROM estudiantes WHERE id_estudiante = :id_estudiante");
+        $stmt->bindParam(':id_estudiante', $id_estudiante);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            throw new Exception("El estudiante no existe en el sistema.");
+        }
+
         $fecha_actual = date('Y-m-d');
         $hora_actual = date('H:i:s');
-        
+
         // Verificar si ya tiene una entrada hoy sin salida
-        $stmt = $conn->prepare("SELECT id_asistencia FROM asistencia_biblioteca 
+        $stmt = $conn->prepare("SELECT id_asistencia, hora_entrada FROM asistencia_biblioteca 
                                WHERE id_estudiante = :id_estudiante 
                                AND fecha = :fecha 
                                AND hora_salida IS NULL");
         $stmt->bindParam(':id_estudiante', $id_estudiante);
         $stmt->bindParam(':fecha', $fecha_actual);
         $stmt->execute();
-        
-        if($stmt->rowCount() == 0) {
-            // Registrar nueva entrada
-            $insert = $conn->prepare("INSERT INTO asistencia_biblioteca 
-                                    (id_estudiante, fecha, hora_entrada) 
-                                    VALUES (:id_estudiante, :fecha, :hora_entrada)");
-            $insert->bindParam(':id_estudiante', $id_estudiante);
-            $insert->bindParam(':fecha', $fecha_actual);
-            $insert->bindParam(':hora_entrada', $hora_actual);
-            $insert->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $entrada = $stmt->fetch(PDO::FETCH_ASSOC);
+            throw new Exception("Ya tienes una entrada registrada sin salida para hoy a las " . date('H:i', strtotime($entrada['hora_entrada'])));
         }
-    } catch(PDOException $e) {
-        die("Error al registrar entrada: " . $e->getMessage());
+
+        // Verificar si ya tiene una entrada y salida hoy
+        $stmt = $conn->prepare("SELECT COUNT(*) as total FROM asistencia_biblioteca 
+                               WHERE id_estudiante = :id_estudiante 
+                               AND fecha = :fecha");
+        $stmt->bindParam(':id_estudiante', $id_estudiante);
+        $stmt->bindParam(':fecha', $fecha_actual);
+        $stmt->execute();
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultado['total'] > 0) {
+            throw new Exception("Ya tienes registros de asistencia para hoy.");
+        }
+
+        // Registrar nueva entrada
+        $insert = $conn->prepare("INSERT INTO asistencia_biblioteca 
+                                (id_estudiante, fecha, hora_entrada) 
+                                VALUES (:id_estudiante, :fecha, :hora_entrada)");
+        $insert->bindParam(':id_estudiante', $id_estudiante);
+        $insert->bindParam(':fecha', $fecha_actual);
+        $insert->bindParam(':hora_entrada', $hora_actual);
+
+        if (!$insert->execute()) {
+            throw new Exception("Error al registrar la entrada en la base de datos.");
+        }
+
+        return true;
+    } catch (PDOException $e) {
+        error_log("Error de base de datos al registrar entrada: " . $e->getMessage());
+        throw new Exception("Error al registrar entrada: " . $e->getMessage());
+    } catch (Exception $e) {
+        throw $e;
     }
 }
-?>

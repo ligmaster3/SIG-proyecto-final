@@ -47,24 +47,3 @@ Sistema de gestión integral para la biblioteca del CRUBA que permite la adminis
 ## Próximos Pasos
 - Mejora en el sistema de reportes
 
-
-
-### Ideas Geniales
-- Implementar un sistema de recomendación de libros basado en el historial de préstamos
-- Desarrollar una aplicación móvil para acceso remoto
-- Integrar un sistema de chat en vivo para soporte técnico
-
-### Ideas Simples
-1. Agregar filtros avanzados en la búsqueda de libros
-2. Implementar un sistema de calificaciones para libros
-
-### Ideas Creativas
-3. Crear un sistema de gamificación para incentivar la lectura
-- Desarrollar un espacio virtual de estudio colaborativo
-- Implementar un sistema de "biblioteca social" con reseñas y comentarios
-
-### Otras Ideas
-- Mejorar la accesibilidad del sistema
-- Implementar un sistema de notificaciones por correo electrónico
-- Agregar un módulo de estadísticas más detallado
-- Desarrollar un sistema de reserva de salas de estudio

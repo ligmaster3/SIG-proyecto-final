@@ -52,9 +52,16 @@ try {
 
     // Registrar salida si se solicita
     if (isset($_GET['action']) && $_GET['action'] == 'salida') {
-        $dashboardController->registrarSalidaBiblioteca($_SESSION['user_id']);
-        header("Location: dashboard.php?success=salida");
-        exit;
+        try {
+            $dashboardController->registrarSalidaBiblioteca($_SESSION['user_id']);
+            $_SESSION['mensaje'] = "Salida registrada correctamente.";
+            header("Location: dashboard.php");
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            header("Location: dashboard.php");
+            exit;
+        }
     }
 
     $asistencia = $dashboardController->getAsistenciaHoy($_SESSION['user_id']);
@@ -86,48 +93,48 @@ try {
 
 
     <?php if (!isset($_SESSION['welcome_shown'])): ?>
-    <div class="welcome-overlay">
-        <div class="welcome-card">
-            <div class="welcome-header">
-                <h2><i class="bi bi-book-half me-2"></i> Biblioteca CRUBA</h2>
-            </div>
-            <div class="welcome-body">
-                <div class="welcome-icon">
-                    <i class="bi bi-emoji-smile"></i>
+        <div class="welcome-overlay">
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <h2><i class="bi bi-book-half me-2"></i> Biblioteca CRUBA</h2>
                 </div>
-                <div class="welcome-name text-center p-4">¡Hola, <?php echo htmlspecialchars($estudiante['nombre']); ?>!
+                <div class="welcome-body">
+                    <div class="welcome-icon">
+                        <i class="bi bi-emoji-smile"></i>
+                    </div>
+                    <div class="welcome-name text-center p-4">¡Hola, <?php echo htmlspecialchars($estudiante['nombre']); ?>!
+                    </div>
+                    <div class="welcome-text p-5">
+                        Bienvenido al sistema de gestión de la biblioteca.<br>
+                        Ahora puedes acceder a todos nuestros recursos académicos, reservar computadoras y gestionar tus
+                        préstamos.
+                    </div>
+                    <button class="welcome-button" id="closeWelcome">
+                        Comenzar <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
                 </div>
-                <div class="welcome-text p-5">
-                    Bienvenido al sistema de gestión de la biblioteca.<br>
-                    Ahora puedes acceder a todos nuestros recursos académicos, reservar computadoras y gestionar tus
-                    préstamos.
-                </div>
-                <button class="welcome-button" id="closeWelcome">
-                    Comenzar <i class="bi bi-arrow-right ms-2"></i>
-                </button>
             </div>
         </div>
-    </div>
-    <?php $_SESSION['welcome_shown'] = true; ?>
-    <script>
-    // Cerrar al hacer clic en el botón
-    document.getElementById('closeWelcome').addEventListener('click', function() {
-        const overlay = document.querySelector('.welcome-overlay');
-        overlay.style.animation = 'fadeIn 0.5s reverse forwards';
-        setTimeout(() => {
-            overlay.remove();
-        }, 500);
-    });
+        <?php $_SESSION['welcome_shown'] = true; ?>
+        <script>
+            // Cerrar al hacer clic en el botón
+            document.getElementById('closeWelcome').addEventListener('click', function() {
+                const overlay = document.querySelector('.welcome-overlay');
+                overlay.style.animation = 'fadeIn 0.5s reverse forwards';
+                setTimeout(() => {
+                    overlay.remove();
+                }, 500);
+            });
 
-    // Cerrar automáticamente después de 5 segundos
-    setTimeout(() => {
-        const overlay = document.querySelector('.welcome-overlay');
-        if (overlay) {
-            overlay.style.animation = 'fadeIn 0.5s reverse forwards';
-            setTimeout(() => overlay.remove(), 500);
-        }
-    }, 5000);
-    </script>
+            // Cerrar automáticamente después de 5 segundos
+            setTimeout(() => {
+                const overlay = document.querySelector('.welcome-overlay');
+                if (overlay) {
+                    overlay.style.animation = 'fadeIn 0.5s reverse forwards';
+                    setTimeout(() => overlay.remove(), 500);
+                }
+            }, 5000);
+        </script>
 
     <?php endif; ?>
 
@@ -162,6 +169,26 @@ try {
     </nav>
 
     <div class="container mt-4">
+        <?php if (isset($_SESSION['mensaje'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?php
+                echo $_SESSION['mensaje'];
+                unset($_SESSION['mensaje']);
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?php
+                echo $_SESSION['error'];
+                unset($_SESSION['error']);
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="row">
             <div class="col-md-4">
                 <div class="card mb-4">
@@ -171,9 +198,9 @@ try {
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <div class="profile-image-container">
-                                <img src="<?php echo !empty($estudiante['foto']) ? htmlspecialchars($estudiante['foto']) : '../src/assets/img/default-profile.png'; ?>" 
-                                     class="profile-img mb-3"
-                                     alt="Foto perfil">
+                                <img src="<?php echo !empty($estudiante['foto']) ? htmlspecialchars($estudiante['foto']) : '../src/assets/img/default-profile.png'; ?>"
+                                    class="profile-img mb-3"
+                                    alt="Foto perfil">
                                 <div
                                     class="profile-status <?php echo $asistencia ? 'status-active' : 'status-inactive'; ?>">
                                     <i class="bi <?php echo $asistencia ? 'bi-circle-fill' : 'bi-circle'; ?>"></i>
@@ -213,25 +240,25 @@ try {
                             </div>
 
                             <?php if (isset($estudiante['email'])): ?>
-                            <div class="info-item">
-                                <i class="bi bi-envelope"></i>
-                                <div class="info-content">
-                                    <span class="info-label">Email</span>
-                                    <span
-                                        class="info-value"><?php echo htmlspecialchars($estudiante['email']); ?></span>
+                                <div class="info-item">
+                                    <i class="bi bi-envelope"></i>
+                                    <div class="info-content">
+                                        <span class="info-label">Email</span>
+                                        <span
+                                            class="info-value"><?php echo htmlspecialchars($estudiante['email']); ?></span>
+                                    </div>
                                 </div>
-                            </div>
                             <?php endif; ?>
 
                             <?php if (isset($estudiante['telefono'])): ?>
-                            <div class="info-item">
-                                <i class="bi bi-telephone"></i>
-                                <div class="info-content">
-                                    <span class="info-label">Teléfono</span>
-                                    <span
-                                        class="info-value"><?php echo htmlspecialchars($estudiante['telefono']); ?></span>
+                                <div class="info-item">
+                                    <i class="bi bi-telephone"></i>
+                                    <div class="info-content">
+                                        <span class="info-label">Teléfono</span>
+                                        <span
+                                            class="info-value"><?php echo htmlspecialchars($estudiante['telefono']); ?></span>
+                                    </div>
                                 </div>
-                            </div>
                             <?php endif; ?>
                         </div>
 
@@ -268,33 +295,33 @@ try {
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="activity-info">
                                         <?php if ($asistencia): ?>
-                                        <p><strong>Hora de entrada:</strong>
-                                            <?php echo htmlspecialchars($asistencia['hora_entrada']); ?></p>
-                                        <?php if ($asistencia['hora_salida']): ?>
-                                        <p><strong>Hora de salida:</strong>
-                                            <?php echo htmlspecialchars($asistencia['hora_salida']); ?>
-                                        </p>
+                                            <p><strong>Hora de entrada:</strong>
+                                                <?php echo htmlspecialchars($asistencia['hora_entrada']); ?></p>
+                                            <?php if ($asistencia['hora_salida']): ?>
+                                                <p><strong>Hora de salida:</strong>
+                                                    <?php echo htmlspecialchars($asistencia['hora_salida']); ?>
+                                                </p>
+                                            <?php else: ?>
+                                                <p class='text-success'><strong>Actualmente en la biblioteca</strong></p>
+                                            <?php endif; ?>
                                         <?php else: ?>
-                                        <p class='text-success'><strong>Actualmente en la biblioteca</strong></p>
-                                        <?php endif; ?>
-                                        <?php else: ?>
-                                        <p>No has registrado entrada hoy.</p>
+                                            <p>No has registrado entrada hoy.</p>
                                         <?php endif; ?>
 
                                         <?php if (count($computadoras) > 0): ?>
-                                        <h6 class='mt-4'>Uso de computadoras:</h6>
-                                        <?php foreach ($computadoras as $comp): ?>
-                                        <p>
-                                            <strong>Computadora
-                                                #<?php echo htmlspecialchars($comp['computadora_id']); ?></strong><br>
-                                            Inicio: <?php echo htmlspecialchars($comp['hora_inicio']); ?><br>
-                                            <?php if ($comp['hora_fin']): ?>
-                                            Fin: <?php echo htmlspecialchars($comp['hora_fin']); ?>
-                                            <?php else: ?>
-                                            <span class='text-success'>En uso actualmente</span>
-                                            <?php endif; ?>
-                                        </p>
-                                        <?php endforeach; ?>
+                                            <h6 class='mt-4'>Uso de computadoras:</h6>
+                                            <?php foreach ($computadoras as $comp): ?>
+                                                <p>
+                                                    <strong>Computadora
+                                                        #<?php echo htmlspecialchars($comp['computadora_id']); ?></strong><br>
+                                                    Inicio: <?php echo htmlspecialchars($comp['hora_inicio']); ?><br>
+                                                    <?php if ($comp['hora_fin']): ?>
+                                                        Fin: <?php echo htmlspecialchars($comp['hora_fin']); ?>
+                                                    <?php else: ?>
+                                                        <span class='text-success'>En uso actualmente</span>
+                                                    <?php endif; ?>
+                                                </p>
+                                            <?php endforeach; ?>
                                         <?php endif; ?>
                                     </div>
                                     <div class="ms-3">
@@ -378,23 +405,23 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Mostrar spinner al navegar entre páginas
-    const links = document.querySelectorAll('a, button[type="submit"]');
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Solo mostrar para enlaces internos
-            if (link.href && link.href.indexOf(window.location.host) !== -1) {
-                document.getElementById('globalSpinner').style.display = 'flex';
-                setTimeout(() => {
-                    document.getElementById('globalSpinner').style.display = 'none';
-                }, 2000); // Oculta el spinner después de 2 segundos
-            }
+        // Mostrar spinner al navegar entre páginas
+        const links = document.querySelectorAll('a, button[type="submit"]');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Solo mostrar para enlaces internos
+                if (link.href && link.href.indexOf(window.location.host) !== -1) {
+                    document.getElementById('globalSpinner').style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById('globalSpinner').style.display = 'none';
+                    }, 2000); // Oculta el spinner después de 2 segundos
+                }
+            });
         });
-    });
-    // Ocultar spinner al cargar la página
-    window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('globalSpinner').style.display = 'none';
-    });
+        // Ocultar spinner al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('globalSpinner').style.display = 'none';
+        });
     </script>
 </body>
 

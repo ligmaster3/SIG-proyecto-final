@@ -28,6 +28,19 @@ class DashboardController
             $fecha_actual = date('Y-m-d');
             $hora_actual = date('H:i:s');
 
+            // Verificar si hay una entrada sin salida
+            $stmt = $this->conn->prepare("SELECT id_asistencia FROM asistencia_biblioteca 
+                                        WHERE id_estudiante = :id_estudiante 
+                                        AND fecha = :fecha 
+                                        AND hora_salida IS NULL");
+            $stmt->bindParam(':id_estudiante', $id_estudiante);
+            $stmt->bindParam(':fecha', $fecha_actual);
+            $stmt->execute();
+
+            if ($stmt->rowCount() == 0) {
+                throw new Exception("No hay registro de entrada activo para hoy.");
+            }
+
             // Registrar salida de biblioteca
             $stmt = $this->conn->prepare("UPDATE asistencia_biblioteca 
                                         SET hora_salida = :hora_salida 
@@ -39,7 +52,7 @@ class DashboardController
             $stmt->bindParam(':fecha', $fecha_actual);
             $stmt->execute();
 
-            // Registrar salida de computadoras
+            // Registrar salida de computadoras si está usando una
             $stmt = $this->conn->prepare("UPDATE uso_computadoras 
                                         SET hora_fin = :hora_fin 
                                         WHERE id_estudiante = :id_estudiante 

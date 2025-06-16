@@ -9,14 +9,14 @@ require_once '../config/config.php';
         <div class="loading-spinner"></div>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark" role="navigation" aria-label="Navegación principal">
         <div class="container">
             <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 'administrador'): ?>
                 <!-- Vista para administradores -->
                 <div class="d-flex align-items-center">
-                    <img src="../src/assets/img/logoUnachi.jpg" alt="Logo Biblioteca" class="logoUniv">
+                    <img src="../src/assets/img/logoUnachi.jpg" alt="Logo Biblioteca CRUBA" class="logoUniv">
                     <span class="navbar-brand d-flex align-items-center">
-                        <i class="bi bi-book-half me-2"></i>
+                        <i class="bi bi-book-half me-2" aria-hidden="true"></i>
                         <span>Biblioteca CRUBA</span>
                     </span>
                 </div>
@@ -24,26 +24,25 @@ require_once '../config/config.php';
                 <div class="d-flex align-items-center">
                     <ul class="navbar-nav flex-row gap-3">
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="./admin.php">
-                                <i class="bi bi-speedometer2 me-2"></i>
+                            <a class="nav-link d-flex align-items-center" href="./admin.php" aria-label="Panel de administración">
+                                <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
                                 <span>Admin</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="./admin_prestamos.php">
-                                <i class="bi bi-journal-text me-2"></i>
+                            <a class="nav-link d-flex align-items-center" href="./admin_prestamos.php" aria-label="Panel de préstamos">
+                                <i class="bi bi-journal-text me-2" aria-hidden="true"></i>
                                 <span>Panel</span>
                             </a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                                data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-2"></i>
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menú de usuario">
+                                <i class="bi bi-person-circle me-2" aria-hidden="true"></i>
                                 <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar
-                                        sesión</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="logout.php" aria-label="Cerrar sesión"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i> Cerrar sesión</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -52,41 +51,41 @@ require_once '../config/config.php';
             <?php else: ?>
                 <!-- Vista para estudiantes/no logueados -->
                 <div class="d-flex align-items-center">
-                    <img src="../src/assets/img/logoUnachi.jpg" alt="Logo Biblioteca" class="logoUniv">
-                    <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
-                        <i class="bi bi-book-half me-2"></i>
+                    <img src="../src/assets/img/logoUnachi.jpg" alt="Logo Biblioteca CRUBA" class="logoUniv">
+                    <a class="navbar-brand d-flex align-items-center" href="dashboard.php" aria-label="Inicio">
+                        <i class="bi bi-book-half me-2" aria-hidden="true"></i>
                         <span>Biblioteca CRUBA</span>
                     </a>
                 </div>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-expanded="false">
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="dashboard.php">
-                                <i class="bi bi-house-door me-2"></i>
+                            <a class="nav-link d-flex align-items-center" href="dashboard.php" aria-label="Ir al inicio">
+                                <i class="bi bi-house-door me-2" aria-hidden="true"></i>
                                 <span>Inicio</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="libros.php">
-                                <i class="bi bi-book me-2"></i>
+                            <a class="nav-link d-flex align-items-center" href="libros.php" aria-label="Ver catálogo de libros">
+                                <i class="bi bi-book me-2" aria-hidden="true"></i>
                                 <span>Libros</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="computadoras.php">
-                                <i class="bi bi-pc me-2"></i>
+                            <a class="nav-link d-flex align-items-center" href="computadoras.php" aria-label="Acceder a computadoras">
+                                <i class="bi bi-pc me-2" aria-hidden="true"></i>
                                 <span>Computadoras</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="solicitudes.php">
-                                <i class="bi bi-journal-text me-2"></i>
+                            <a class="nav-link d-flex align-items-center" href="solicitudes.php" aria-label="Ver mis solicitudes">
+                                <i class="bi bi-journal-text me-2" aria-hidden="true"></i>
                                 <span>Mis solicitudes</span>
                             </a>
                         </li>
@@ -96,7 +95,7 @@ require_once '../config/config.php';
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                                    data-bs-toggle="dropdown">
+                                    data-bs-toggle="dropdown" aria-expanded="false" id="perfilDropdown" aria-label="Menú de perfil">
                                     <?php
                                     $foto_estudiante = '';
                                     try {
@@ -116,17 +115,18 @@ require_once '../config/config.php';
                                     ?>
                                     <?php if (!empty($foto_estudiante)): ?>
                                         <img src="<?php echo htmlspecialchars($foto_estudiante); ?>" class="rounded-circle me-2"
-                                            width="30" height="30" alt="Foto de perfil" style="object-fit: cover;"
+                                            width="30" height="30" alt="Foto de perfil de <?= htmlspecialchars($_SESSION['user_name']) ?>"
+                                            style="object-fit: cover;"
                                             onerror="this.onerror=null; this.src='../src/assets/img/user-default.png';">
                                     <?php else: ?>
-                                        <i class="bi bi-person-circle me-2"></i>
+                                        <i class="bi bi-person-circle me-2" aria-hidden="true"></i>
                                     <?php endif; ?>
                                     <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center py-2" href="#">
-                                            <i class="bi bi-person me-2"></i>
+                                        <a class="dropdown-item d-flex align-items-center py-2" href="#" aria-label="Ver mi perfil">
+                                            <i class="bi bi-person me-2" aria-hidden="true"></i>
                                             <span>Mi perfil</span>
                                         </a>
                                     </li>
@@ -134,8 +134,8 @@ require_once '../config/config.php';
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center py-2 text-danger" href="logout.php">
-                                            <i class="bi bi-box-arrow-right me-2"></i>
+                                        <a class="dropdown-item d-flex align-items-center py-2 text-danger" href="logout.php" aria-label="Cerrar sesión">
+                                            <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
                                             <span>Cerrar sesión</span>
                                         </a>
                                     </li>
