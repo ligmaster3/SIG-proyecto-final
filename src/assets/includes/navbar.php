@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="../src/assets/css/styles.css">
 
 <body>
@@ -90,7 +89,7 @@
                     <?php if (isset($_SESSION['user_name'])): ?>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item dropdown">
-                                
+
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false" id="perfilDropdown" aria-label="Menú de perfil">
                                     <?php
@@ -111,10 +110,12 @@
                                     }
                                     ?>
                                     <?php if (!empty($foto_estudiante)): ?>
-                                        <img src="<?php echo htmlspecialchars($foto_estudiante); ?>" class="rounded-circle me-2"
+                                        <img src="<?= htmlspecialchars($foto_estudiante ?: '../src/assets/img/user-default.png'); ?>"
+                                            class="rounded-circle me-2"
                                             width="30" height="30" alt="Foto de perfil de <?= htmlspecialchars($_SESSION['user_name']) ?>"
                                             style="object-fit: cover;"
-                                            onerror="this.onerror=null; this.src='../src/assets/img/user-default.png';">
+                                            onerror="this.src='../src/assets/img/user-default.png';">
+
                                     <?php else: ?>
                                         <i class="bi bi-person-circle me-2" aria-hidden="true"></i>
                                     <?php endif; ?>
