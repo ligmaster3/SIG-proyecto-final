@@ -130,4 +130,48 @@ class DashboardController
             throw new Exception("Error al obtener uso de computadoras: " . $e->getMessage());
         }
     }
+
+    public function getEstadisticasFacultad($id_facultad)
+    {
+        try {
+            $stmt = $this->conn->prepare("
+                SELECT 
+                    COUNT(DISTINCT e.id_estudiante) as total_estudiantes,
+                    COUNT(DISTINCT es.id_escuela) as total_escuelas,
+                    COUNT(DISTINCT a.id_asistencia) as total_visitas
+                FROM facultades f
+                LEFT JOIN escuelas es ON f.id_facultad = es.id_facultad
+                LEFT JOIN estudiantes e ON es.id_escuela = e.id_escuela
+                LEFT JOIN asistencia_biblioteca a ON e.id_estudiante = a.id_estudiante
+                WHERE f.id_facultad = :id_facultad
+            ");
+            $stmt->bindParam(':id_facultad', $id_facultad);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener estadísticas de la facultad: " . $e->getMessage());
+        }
+    }
+
+    public function getEstadisticasEscuela($id_escuela)
+    {
+        try {
+            $stmt = $this->conn->prepare("
+                SELECT 
+                    COUNT(DISTINCT e.id_estudiante) as total_estudiantes,
+                    COUNT(DISTINCT a.id_asistencia) as total_visitas,
+                    COUNT(DISTINCT u.id_uso) as total_uso_computadoras
+                FROM escuelas es
+                LEFT JOIN estudiantes e ON es.id_escuela = e.id_escuela
+                LEFT JOIN asistencia_biblioteca a ON e.id_estudiante = a.id_estudiante
+                LEFT JOIN uso_computadoras u ON e.id_estudiante = u.id_estudiante
+                WHERE es.id_escuela = :id_escuela
+            ");
+            $stmt->bindParam(':id_escuela', $id_escuela);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener estadísticas de la escuela: " . $e->getMessage());
+        }
+    }
 }
