@@ -444,6 +444,7 @@ input[type="file"]:hover {
 .welcome-button {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border: none;
+  width: 100%;
   padding: 1rem 2rem;
   border-radius: 50px;
   color: white;

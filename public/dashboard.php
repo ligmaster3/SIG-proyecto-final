@@ -109,7 +109,7 @@ try {
                         Ahora puedes acceder a todos nuestros recursos académicos, reservar computadoras y gestionar tus
                         préstamos.
                     </div>
-                    <button class="welcome-button" id="closeWelcome">
+                    <button class="welcome-button p-3" id="closeWelcome">
                         Comenzar <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                 </div>
