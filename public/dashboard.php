@@ -225,8 +225,7 @@ try {
                                 <i class="bi bi-building"></i>
                                 <div class="info-content">
                                     <span class="info-label">Facultad</span>
-                                    <span
-                                        class="info-value"><?php echo htmlspecialchars($estudiante['facultad']); ?></span>
+                                    <span class="info-value"><?php echo htmlspecialchars($estudiante['nombre_facultad'] ?? 'No asignada'); ?></span>
                                 </div>
                             </div>
 
@@ -234,8 +233,7 @@ try {
                                 <i class="bi bi-mortarboard"></i>
                                 <div class="info-content">
                                     <span class="info-label">Escuela</span>
-                                    <span
-                                        class="info-value"><?php echo htmlspecialchars($estudiante['escuela']); ?></span>
+                                    <span class="info-value"><?php echo htmlspecialchars($estudiante['nombre_escuela'] ?? 'No asignada'); ?></span>
                                 </div>
                             </div>
 
@@ -324,7 +322,7 @@ try {
                                             <?php endforeach; ?>
                                         <?php endif; ?>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -352,9 +350,9 @@ try {
                                         <span>Usar computadora</span>
                                     </a>
                                     <a href="dashboard.php?action=salida" class="quick-action-btn danger">
-                                            <i class="bi bi-box-arrow-left"></i>
-                                            <span>Registrar salida</span>
-                                        </a>
+                                        <i class="bi bi-box-arrow-left"></i>
+                                        <span>Registrar salida</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>

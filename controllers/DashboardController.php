@@ -13,12 +13,42 @@ class DashboardController
     public function getEstudianteInfo($id_estudiante)
     {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM estudiantes WHERE id_estudiante = :id");
+            $stmt = $this->conn->prepare("
+                SELECT e.*, f.nombre as nombre_facultad, es.nombre as nombre_escuela 
+                FROM estudiantes e
+                LEFT JOIN facultades f ON e.id_facultad = f.id_facultad
+                LEFT JOIN escuelas es ON e.id_escuela = es.id_escuela
+                WHERE e.id_estudiante = :id
+            ");
             $stmt->bindParam(':id', $id_estudiante);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw new Exception("Error al obtener información del estudiante: " . $e->getMessage());
+        }
+    }
+
+    public function getFacultadInfo($id_facultad)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM facultades WHERE id_facultad = :id");
+            $stmt->bindParam(':id', $id_facultad);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener información de la facultad: " . $e->getMessage());
+        }
+    }
+
+    public function getEscuelaInfo($id_escuela)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM escuelas WHERE id_escuela = :id");
+            $stmt->bindParam(':id', $id_escuela);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener información de la escuela: " . $e->getMessage());
         }
     }
 
