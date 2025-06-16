@@ -204,7 +204,7 @@ try {
     $stmt = $conn->query("SELECT f.nombre as facultad, COUNT(*) as cantidad 
                          FROM asistencia_biblioteca a
                          JOIN estudiantes e ON a.id_estudiante = e.id_estudiante
-                         JOIN escuelas es ON e.escuela = es.nombre
+                         JOIN escuelas es ON e.id_escuela = es.id_escuela
                          JOIN facultades f ON es.id_facultad = f.id_facultad
                          GROUP BY f.nombre 
                          ORDER BY cantidad DESC 
@@ -240,6 +240,17 @@ try {
                          FROM uso_computadoras
                          WHERE hora_fin IS NOT NULL");
     $uso_computadoras = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Escuelas con más uso
+    $stmt = $conn->query("SELECT es.nombre as escuela, f.nombre as facultad, COUNT(*) as cantidad 
+                         FROM asistencia_biblioteca a
+                         JOIN estudiantes e ON a.id_estudiante = e.id_estudiante
+                         JOIN escuelas es ON e.id_escuela = es.id_escuela
+                         JOIN facultades f ON es.id_facultad = f.id_facultad
+                         GROUP BY es.nombre, f.nombre 
+                         ORDER BY cantidad DESC 
+                         LIMIT 5");
+    $escuelas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Obtener todas las facultades y escuelas para el panel de administración
     $todas_facultades = obtenerFacultades();
@@ -376,6 +387,36 @@ try {
                             </div>
                             <div class="card-body">
                                 <canvas id="categoriaChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Escuelas con más uso</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Escuela</th>
+                                            <th>Facultad</th>
+                                            <th>Visitas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($escuelas as $escuela): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
+                                            <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
+                                            <td><?php echo $escuela['cantidad']; ?></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
