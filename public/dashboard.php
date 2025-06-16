@@ -324,12 +324,7 @@ try {
                                             <?php endforeach; ?>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="ms-3">
-                                        <a href="dashboard.php?action=salida" class="quick-action-btn danger">
-                                            <i class="bi bi-box-arrow-left"></i>
-                                            <span>Registrar salida</span>
-                                        </a>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -356,7 +351,10 @@ try {
                                         <i class="bi bi-pc"></i>
                                         <span>Usar computadora</span>
                                     </a>
-
+                                    <a href="dashboard.php?action=salida" class="quick-action-btn danger">
+                                            <i class="bi bi-box-arrow-left"></i>
+                                            <span>Registrar salida</span>
+                                        </a>
                                 </div>
                             </div>
                         </div>
