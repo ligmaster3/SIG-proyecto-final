@@ -148,30 +148,58 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Mostrar spinner al hacer clic en enlaces
-        const links = document.querySelectorAll('a:not([data-bs-toggle])');
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Solo mostrar para enlaces internos
-                if (link.href && link.href.indexOf(window.location.host) !== -1) {
-                    document.getElementById('globalSpinner').style.display = 'flex';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar todos los dropdowns
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const dropdownMenu = this.nextElementSibling;
+                    const isOpen = dropdownMenu.classList.contains('show');
+
+                    // Cerrar todos los dropdowns
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+
+                    // Abrir/cerrar el dropdown actual
+                    if (!isOpen) {
+                        dropdownMenu.classList.add('show');
+                    }
+                });
+            });
+
+            // Cerrar dropdowns al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
                 }
             });
-        });
 
-        // Mostrar spinner al hacer clic en botones de acción
-        const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
-        actionButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                document.getElementById('globalSpinner').style.display = 'flex';
-                setTimeout(() => {
-                    document.getElementById('globalSpinner').style.display = 'none';
-                }, 500);
+            // Mostrar spinner al hacer clic en enlaces
+            const links = document.querySelectorAll('a:not([data-bs-toggle])');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (link.href && link.href.indexOf(window.location.host) !== -1) {
+                        document.getElementById('globalSpinner').style.display = 'flex';
+                    }
+                });
             });
-        });
 
-        // Ocultar spinner al cargar la página
-        window.addEventListener('DOMContentLoaded', () => {
+            // Mostrar spinner al hacer clic en botones de acción
+            const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    document.getElementById('globalSpinner').style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById('globalSpinner').style.display = 'none';
+                    }, 500);
+                });
+            });
+
+            // Ocultar spinner al cargar la página
             document.getElementById('globalSpinner').style.display = 'none';
         });
     </script>
