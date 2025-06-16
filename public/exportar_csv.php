@@ -9,7 +9,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != 1) {
 }
 
 // Función mejorada para exportar a CSV
-function exportarACSV($datos, $cabeceras, $nombreArchivo) {
+function exportarACSV($datos, $cabeceras, $nombreArchivo)
+{
     // Configurar headers para forzar a Excel a abrir correctamente el archivo
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $nombreArchivo . '"');
@@ -18,17 +19,17 @@ function exportarACSV($datos, $cabeceras, $nombreArchivo) {
 
     // Abrir el output
     $output = fopen('php://output', 'w');
-    
+
     // Añadir BOM (Byte Order Mark) para UTF-8 (mejor compatibilidad con Excel)
     fwrite($output, "\xEF\xBB\xBF");
-    
+
     // Escribir encabezados con formato mejorado
     fputcsv($output, $cabeceras);
-    
+
     // Escribir datos con formato consistente
     foreach ($datos as $fila) {
         // Formatear fechas y campos especiales para mejor visualización en Excel
-        $filaFormateada = array_map(function($valor) {
+        $filaFormateada = array_map(function ($valor) {
             // Si es una fecha conocida, darle formato estándar
             if (preg_match('/^\d{4}-\d{2}-\d{2}/', $valor)) {
                 return date('d/m/Y H:i', strtotime($valor));
@@ -39,7 +40,7 @@ function exportarACSV($datos, $cabeceras, $nombreArchivo) {
             }
             return $valor;
         }, $fila);
-        
+
         fputcsv($output, $filaFormateada);
     }
 
@@ -48,7 +49,8 @@ function exportarACSV($datos, $cabeceras, $nombreArchivo) {
 }
 
 // Función para exportar a Excel con formato HTML (mejor visualización)
-function exportarXLSL($datos, $cabeceras, $nombreArchivo) {
+function exportarXLSL($datos, $cabeceras, $nombreArchivo)
+{
     header("Content-Type: application/vnd.ms-excel");
     header("Content-Disposition: attachment; filename=\"$nombreArchivo\"");
     header("Pragma: no-cache");
@@ -58,14 +60,14 @@ function exportarXLSL($datos, $cabeceras, $nombreArchivo) {
     echo "<head><meta charset=\"UTF-8\"></head>";
     echo "<body>";
     echo "<table border='1' style='border-collapse: collapse;'>";
-    
+
     // Encabezados con estilo
     echo "<tr style='background-color: #0074D9; color: white;'>";
     foreach ($cabeceras as $cabecera) {
         echo "<th>" . htmlspecialchars($cabecera) . "</th>";
     }
     echo "</tr>";
-    
+
     // Datos con filas alternadas
     $contador = 0;
     foreach ($datos as $fila) {
@@ -81,7 +83,7 @@ function exportarXLSL($datos, $cabeceras, $nombreArchivo) {
         echo "</tr>";
         $contador++;
     }
-    
+
     echo "</table>";
     echo "</body></html>";
     exit;
@@ -123,14 +125,16 @@ try {
             break;
 
         case 'estudiantes':
-            $sql = "SELECT nombre, cedula, correo, carrera, telefono 
-                    FROM estudiantes 
-                    ORDER BY nombre";
+            $sql = "SELECT e.nombre, e.cedula, e.correo, f.nombre as facultad, es.nombre as escuela 
+                    FROM estudiantes e
+                    LEFT JOIN escuelas es ON e.id_escuela = es.id_escuela
+                    LEFT JOIN facultades f ON es.id_facultad = f.id_facultad
+                    ORDER BY e.nombre";
 
             $stmt = $conn->query($sql);
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $cabeceras = ['Nombre', 'Cédula', 'Correo', 'Carrera', 'Teléfono'];
+            $cabeceras = ['Nombre', 'Cédula', 'Correo', 'Facultad', 'Escuela'];
             $nombreArchivo = 'estudiantes_' . date('Y-m-d') . ($formato == 'excel' ? '.xls' : '.csv');
             $titulo = 'Estudiantes Registrados';
             break;
@@ -194,143 +198,143 @@ try {
         }
     }
 ?>
-<!DOCTYPE html>
-<html lang="es">
+    <!DOCTYPE html>
+    <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exportar Datos - <?php echo $titulo; ?></title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f4f4f4;
-        margin: 0;
-        padding: 20px;
-    }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exportar Datos - <?php echo $titulo; ?></title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+            }
 
-    .container {
-        max-width: 95%;
-        margin: 0 auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+            .container {
+                max-width: 95%;
+                margin: 0 auto;
+                background: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
 
-    h2 {
-        color: #333;
-        border-bottom: 2px solid #0074D9;
-        padding-bottom: 10px;
-    }
+            h2 {
+                color: #333;
+                border-bottom: 2px solid #0074D9;
+                padding-bottom: 10px;
+            }
 
-    .btn-group {
-        margin: 20px 0;
-    }
+            .btn-group {
+                margin: 20px 0;
+            }
 
-    .btn {
-        display: inline-block;
-        padding: 10px 15px;
-        margin-right: 10px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
+            .btn {
+                display: inline-block;
+                padding: 10px 15px;
+                margin-right: 10px;
+                border-radius: 4px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: all 0.3s;
+            }
 
-    .btn-excel {
-        background: #1D6F42;
-        color: white;
-    }
+            .btn-excel {
+                background: #1D6F42;
+                color: white;
+            }
 
-    .btn-excel:hover {
-        background: #165732;
-    }
+            .btn-excel:hover {
+                background: #165732;
+            }
 
-    .btn-csv {
-        background: #0074D9;
-        color: white;
-    }
+            .btn-csv {
+                background: #0074D9;
+                color: white;
+            }
 
-    .btn-csv:hover {
-        background: #005bb5;
-    }
+            .btn-csv:hover {
+                background: #005bb5;
+            }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
 
-    th,
-    td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-    }
+            th,
+            td {
+                border: 1px solid #ddd;
+                padding: 12px;
+                text-align: left;
+            }
 
-    th {
-        background-color: #0074D9;
-        color: white;
-    }
+            th {
+                background-color: #0074D9;
+                color: white;
+            }
 
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
 
-    tr:hover {
-        background-color: #e9e9e9;
-    }
+            tr:hover {
+                background-color: #e9e9e9;
+            }
 
-    .info {
-        margin: 20px 0;
-        padding: 15px;
-        background: #e7f3fe;
-        border-left: 6px solid #0074D9;
-    }
-    </style>
-</head>
+            .info {
+                margin: 20px 0;
+                padding: 15px;
+                background: #e7f3fe;
+                border-left: 6px solid #0074D9;
+            }
+        </style>
+    </head>
 
-<body>
-    <div class="container">
-        <h2><?php echo $titulo; ?></h2>
+    <body>
+        <div class="container">
+            <h2><?php echo $titulo; ?></h2>
 
-        <div class="info">
-            <p>Vista previa de los datos que se exportarán. Seleccione el formato deseado:</p>
-        </div>
+            <div class="info">
+                <p>Vista previa de los datos que se exportarán. Seleccione el formato deseado:</p>
+            </div>
 
-        <div class="btn-group">
-            <a href="?tipo=<?php echo $tipo; ?>&descargar=1&formato=excel" class="btn btn-excel">
-                <i class="fas fa-file-excel"></i> Exportar a Excel
-            </a>
-            <a href="?tipo=<?php echo $tipo; ?>&descargar=1&formato=csv" class="btn btn-csv">
-                <i class="fas fa-file-csv"></i> Exportar a CSV
-            </a>
-        </div>
+            <div class="btn-group">
+                <a href="?tipo=<?php echo $tipo; ?>&descargar=1&formato=excel" class="btn btn-excel">
+                    <i class="fas fa-file-excel"></i> Exportar a Excel
+                </a>
+                <a href="?tipo=<?php echo $tipo; ?>&descargar=1&formato=csv" class="btn btn-csv">
+                    <i class="fas fa-file-csv"></i> Exportar a CSV
+                </a>
+            </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <?php foreach ($cabeceras as $cabecera): ?>
-                    <th><?php echo htmlspecialchars($cabecera); ?></th>
+            <table>
+                <thead>
+                    <tr>
+                        <?php foreach ($cabeceras as $cabecera): ?>
+                            <th><?php echo htmlspecialchars($cabecera); ?></th>
+                        <?php endforeach; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($datos as $fila): ?>
+                        <tr>
+                            <?php foreach ($fila as $valor): ?>
+                                <td><?php echo htmlspecialchars($valor); ?></td>
+                            <?php endforeach; ?>
+                        </tr>
                     <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($datos as $fila): ?>
-                <tr>
-                    <?php foreach ($fila as $valor): ?>
-                    <td><?php echo htmlspecialchars($valor); ?></td>
-                    <?php endforeach; ?>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</body>
+                </tbody>
+            </table>
+        </div>
+    </body>
 
-</html>
+    </html>
 <?php
 } catch (Exception $e) {
     $_SESSION['error'] = "Error al exportar: " . $e->getMessage();
