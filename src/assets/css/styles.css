@@ -475,7 +475,6 @@ input[type="file"]:hover {
   font-size: 4rem;
   color: var(--primary-color);
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: bounce 2s infinite;
 }
