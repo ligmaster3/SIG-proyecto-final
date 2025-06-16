@@ -1,7 +1,4 @@
-<?php
 
-require_once '../config/config.php';
-?>
 <link rel="stylesheet" href="../src/assets/css/styles.css">
 
 <body>
@@ -58,34 +55,33 @@ require_once '../config/config.php';
                     </a>
                 </div>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="dashboard.php" aria-label="Ir al inicio">
-                                <i class="bi bi-house-door me-2" aria-hidden="true"></i>
+                            <a class="nav-link d-flex align-items-center" href="dashboard.php" title="Ir al inicio">
+                                <i class="bi bi-house-door me-2"></i>
                                 <span>Inicio</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="libros.php" aria-label="Ver catálogo de libros">
-                                <i class="bi bi-book me-2" aria-hidden="true"></i>
+                            <a class="nav-link d-flex align-items-center" href="libros.php" title="Ver catálogo de libros">
+                                <i class="bi bi-book me-2"></i>
                                 <span>Libros</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="computadoras.php" aria-label="Acceder a computadoras">
-                                <i class="bi bi-pc me-2" aria-hidden="true"></i>
+                            <a class="nav-link d-flex align-items-center" href="computadoras.php" title="Acceder a computadoras">
+                                <i class="bi bi-pc me-2"></i>
                                 <span>Computadoras</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center" href="solicitudes.php" aria-label="Ver mis solicitudes">
-                                <i class="bi bi-journal-text me-2" aria-hidden="true"></i>
+                            <a class="nav-link d-flex align-items-center" href="solicitudes.php" title="Ver mis solicitudes">
+                                <i class="bi bi-journal-text me-2"></i>
                                 <span>Mis solicitudes</span>
                             </a>
                         </li>
@@ -94,6 +90,7 @@ require_once '../config/config.php';
                     <?php if (isset($_SESSION['user_name'])): ?>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item dropdown">
+                                
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false" id="perfilDropdown" aria-label="Menú de perfil">
                                     <?php
