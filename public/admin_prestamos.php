@@ -246,6 +246,10 @@ try {
 </head>
 
 <body>
+    <div id="globalSpinner" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:99999;align-items:center;justify-content:center;">
+        <div class="loading-spinner"></div>
+    </div>
+
     <?php include '../src/assets/includes/navbar.php'; ?>
 
     <div class="container mt-4">
@@ -732,6 +736,30 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Mostrar spinner al enviar formularios
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+            });
+        });
+
+        // Mostrar spinner al hacer clic en botones de acción
+        const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('globalSpinner').style.display = 'none';
+                }, 500);
+            });
+        });
+
+        // Ocultar spinner al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('globalSpinner').style.display = 'none';
+        });
+
         // Gráfico de estados
         const estadosCtx = document.getElementById('estadosChart').getContext('2d');
         const estadosChart = new Chart(estadosCtx, {

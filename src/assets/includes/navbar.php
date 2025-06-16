@@ -1,45 +1,180 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand" href="dashboard.php">Biblioteca CRUBA</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="dashboard.php"><i class="bi bi-house-door"></i> Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./libros.php"><i class="bi bi-book"></i> Libros</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./computadoras.php"><i class="bi bi-pc"></i> Computadoras</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./solicitudes.php"><i class="bi bi-journal-text"></i> Mis
-                        solicitudes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./admin_prestamos.php"><i class="bi bi-journal-text"></i> Mis</a>
-                </li>
+<?php
 
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == 1): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./admin.php"><i class="bi bi-speedometer2"></i> Admin</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <?php if (isset($_SESSION['user_name'])): ?>
-                    <li class="nav-item">
-                        <span class="nav-link"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                    </li>
-                <?php endif; ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar
-                        sesión</a>
-                </li>
-            </ul>
-        </div>
+require_once '../config/config.php';
+?>
+<link rel="stylesheet" href="../src/assets/css/styles.css">
+
+<body>
+    <div id="globalSpinner" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:99999;align-items:center;justify-content:center;">
+        <div class="loading-spinner"></div>
     </div>
-</nav>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 'administrador'): ?>
+                <!-- Vista para administradores -->
+                <div class="d-flex align-items-center">
+                    <img src="../src/assets/img/logoUnachi.jpg" alt="Logo Biblioteca" class="logoUniv">
+                    <span class="navbar-brand d-flex align-items-center">
+                        <i class="bi bi-book-half me-2"></i>
+                        <span>Biblioteca CRUBA</span>
+                    </span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <ul class="navbar-nav flex-row gap-3">
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="./admin.php">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                <span>Admin</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="./admin_prestamos.php">
+                                <i class="bi bi-journal-text me-2"></i>
+                                <span>Panel</span>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-2"></i>
+                                <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar
+                                        sesión</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+            <?php else: ?>
+                <!-- Vista para estudiantes/no logueados -->
+                <div class="d-flex align-items-center">
+                    <img src="../src/assets/img/logoUnachi.jpg" alt="Logo Biblioteca" class="logoUniv">
+                    <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
+                        <i class="bi bi-book-half me-2"></i>
+                        <span>Biblioteca CRUBA</span>
+                    </a>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-expanded="false">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="dashboard.php">
+                                <i class="bi bi-house-door me-2"></i>
+                                <span>Inicio</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="libros.php">
+                                <i class="bi bi-book me-2"></i>
+                                <span>Libros</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="computadoras.php">
+                                <i class="bi bi-pc me-2"></i>
+                                <span>Computadoras</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="solicitudes.php">
+                                <i class="bi bi-journal-text me-2"></i>
+                                <span>Mis solicitudes</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <?php if (isset($_SESSION['user_name'])): ?>
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                                    data-bs-toggle="dropdown">
+                                    <?php
+                                    $foto_estudiante = '';
+                                    try {
+                                        if (isset($_SESSION['user_id'])) {
+                                            require_once '../config/config.php';
+                                            $stmt = $conn->prepare("SELECT foto FROM estudiantes WHERE id_estudiante = ?");
+                                            $stmt->execute([$_SESSION['user_id']]);
+                                            $estudiante = $stmt->fetch(PDO::FETCH_ASSOC);
+                                            if ($estudiante && !empty($estudiante['foto'])) {
+                                                $foto_estudiante = $estudiante['foto'];
+                                            }
+                                        }
+                                    } catch (PDOException $e) {
+                                        error_log("Error al obtener foto de perfil: " . $e->getMessage());
+                                        $foto_estudiante = '../src/assets/img/user-default.png';
+                                    }
+                                    ?>
+                                    <?php if (!empty($foto_estudiante)): ?>
+                                        <img src="<?php echo htmlspecialchars($foto_estudiante); ?>" class="rounded-circle me-2"
+                                            width="30" height="30" alt="Foto de perfil" style="object-fit: cover;"
+                                            onerror="this.onerror=null; this.src='../src/assets/img/user-default.png';">
+                                    <?php else: ?>
+                                        <i class="bi bi-person-circle me-2"></i>
+                                    <?php endif; ?>
+                                    <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center py-2" href="#">
+                                            <i class="bi bi-person me-2"></i>
+                                            <span>Mi perfil</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center py-2 text-danger" href="logout.php">
+                                            <i class="bi bi-box-arrow-right me-2"></i>
+                                            <span>Cerrar sesión</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mostrar spinner al hacer clic en enlaces
+        const links = document.querySelectorAll('a:not([data-bs-toggle])');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Solo mostrar para enlaces internos
+                if (link.href && link.href.indexOf(window.location.host) !== -1) {
+                    document.getElementById('globalSpinner').style.display = 'flex';
+                }
+            });
+        });
+
+        // Mostrar spinner al hacer clic en botones de acción
+        const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('globalSpinner').style.display = 'none';
+                }, 500);
+            });
+        });
+
+        // Ocultar spinner al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('globalSpinner').style.display = 'none';
+        });
+    </script>
+</body>

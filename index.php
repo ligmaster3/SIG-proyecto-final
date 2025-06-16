@@ -34,7 +34,7 @@ if(isset($_SESSION['user_id'])) {
         justify-content: center;
         align-items: center;
         background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-            url('../src/assets/img/IMG_20250611_150731-min.jpg') no-repeat center center fixed;
+            url('https://i.imgur.com/uZl65Su.jpeg') no-repeat center center fixed;
         background-size: cover;
         font-family: 'Cormorant Garamond', serif;
         position: relative;

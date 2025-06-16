@@ -84,6 +84,7 @@ try {
         <div class="loading-spinner"></div>
     </div>
 
+
     <?php if (!isset($_SESSION['welcome_shown'])): ?>
     <div class="welcome-overlay">
         <div class="welcome-card">
@@ -94,8 +95,9 @@ try {
                 <div class="welcome-icon">
                     <i class="bi bi-emoji-smile"></i>
                 </div>
-                <div class="welcome-name">¡Hola, <?php echo htmlspecialchars($estudiante['nombre']); ?>!</div>
-                <div class="welcome-text">
+                <div class="welcome-name text-center p-4">¡Hola, <?php echo htmlspecialchars($estudiante['nombre']); ?>!
+                </div>
+                <div class="welcome-text p-5">
                     Bienvenido al sistema de gestión de la biblioteca.<br>
                     Ahora puedes acceder a todos nuestros recursos académicos, reservar computadoras y gestionar tus
                     préstamos.
@@ -169,8 +171,9 @@ try {
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <div class="profile-image-container">
-                                <img src="<?php echo htmlspecialchars($estudiante['foto']); ?>" class="profile-img mb-3"
-                                    alt="Foto perfil">
+                                <img src="<?php echo !empty($estudiante['foto']) ? htmlspecialchars($estudiante['foto']) : '../src/assets/img/default-profile.png'; ?>" 
+                                     class="profile-img mb-3"
+                                     alt="Foto perfil">
                                 <div
                                     class="profile-status <?php echo $asistencia ? 'status-active' : 'status-inactive'; ?>">
                                     <i class="bi <?php echo $asistencia ? 'bi-circle-fill' : 'bi-circle'; ?>"></i>

@@ -68,7 +68,7 @@ $reportesController->limpiarArchivosTemporales();
 </head>
 
 <body>
-    <?php include 'includes/header.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
 
     <div class="container mt-4">
         <h2>Reportes de Biblioteca</h2>
