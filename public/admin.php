@@ -252,6 +252,20 @@ try {
                          LIMIT 5");
     $escuelas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Uso de computadoras por facultad
+    $stmt = $conn->query("SELECT f.nombre as facultad, 
+                         COUNT(DISTINCT uc.id_estudiante) as estudiantes,
+                         COUNT(*) as total_uso,
+                         ROUND(AVG(TIMESTAMPDIFF(MINUTE, hora_inicio, hora_fin)), 1) as tiempo_promedio
+                         FROM uso_computadoras uc
+                         JOIN estudiantes e ON uc.id_estudiante = e.id_estudiante
+                         JOIN escuelas es ON e.id_escuela = es.id_escuela
+                         JOIN facultades f ON es.id_facultad = f.id_facultad
+                         WHERE hora_fin IS NOT NULL
+                         GROUP BY f.nombre
+                         ORDER BY total_uso DESC");
+    $uso_por_facultad = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // Obtener todas las facultades y escuelas para el panel de administración
     $todas_facultades = obtenerFacultades();
     $todas_escuelas = obtenerEscuelas();
@@ -409,11 +423,43 @@ try {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($escuelas as $escuela): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
+                                                <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
+                                                <td><?php echo $escuela['cantidad']; ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Uso de Computadoras por Facultad</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
-                                            <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
-                                            <td><?php echo $escuela['cantidad']; ?></td>
+                                            <th>Facultad</th>
+                                            <th>Estudiantes Únicos</th>
+                                            <th>Total de Usos</th>
+                                            <th>Tiempo Promedio (min)</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($uso_por_facultad as $facultad): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($facultad['facultad']); ?></td>
+                                                <td><?php echo $facultad['estudiantes']; ?></td>
+                                                <td><?php echo $facultad['total_uso']; ?></td>
+                                                <td><?php echo $facultad['tiempo_promedio']; ?></td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
