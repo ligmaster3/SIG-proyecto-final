@@ -284,6 +284,97 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .stat-item {
+            padding: 8px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item i {
+            font-size: 20px;
+            color: #0d6efd;
+            margin-bottom: 8px;
+        }
+
+        .stat-item h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 3px 0;
+            color: #212529;
+        }
+
+        .stat-item small {
+            color: #6c757d;
+            font-size: 11px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            margin: 0 auto;
+        }
+
+        .card {
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .table-responsive {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .table th {
+            font-weight: 600;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 0.75rem;
+        }
+
+        .display-4 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .nav-tabs .nav-link {
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+
+        .tab-content {
+            padding-top: 1rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -359,110 +450,120 @@ try {
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Estudiantes por género</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="generoChart" height="200"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="generoChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Uso por turno</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="turnoChart" height="200"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="turnoChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Facultades con más uso</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="facultadChart" height="200"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="facultadChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">Categorías más solicitadas</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="categoriaChart" height="200"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="categoriaChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Escuelas con más uso</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Escuela</th>
-                                            <th>Facultad</th>
-                                            <th>Visitas</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($escuelas as $escuela): ?>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Escuelas con más uso</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
-                                                <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
-                                                <td><?php echo $escuela['cantidad']; ?></td>
+                                                <th>Escuela</th>
+                                                <th>Facultad</th>
+                                                <th>Visitas</th>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($escuelas as $escuela): ?>
+                                                <tr>
+                                                    <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
+                                                    <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
+                                                    <td><?php echo $escuela['cantidad']; ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-12 mt-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Uso de Computadoras por Facultad</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Facultad</th>
-                                            <th>Estudiantes Únicos</th>
-                                            <th>Total de Usos</th>
-                                            <th>Tiempo Promedio (min)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($uso_por_facultad as $facultad): ?>
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Uso de Computadoras por Facultad</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($facultad['facultad']); ?></td>
-                                                <td><?php echo $facultad['estudiantes']; ?></td>
-                                                <td><?php echo $facultad['total_uso']; ?></td>
-                                                <td><?php echo $facultad['tiempo_promedio']; ?></td>
+                                                <th>Facultad</th>
+                                                <th>Estudiantes</th>
+                                                <th>Total Usos</th>
+                                                <th>Tiempo (min)</th>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($uso_por_facultad as $facultad): ?>
+                                                <tr>
+                                                    <td><?php echo htmlspecialchars($facultad['facultad']); ?></td>
+                                                    <td><?php echo $facultad['estudiantes']; ?></td>
+                                                    <td><?php echo $facultad['total_uso']; ?></td>
+                                                    <td><?php echo $facultad['tiempo_promedio']; ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -758,9 +859,16 @@ try {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 10,
+                            font: {
+                                size: 11
+                            }
+                        }
                     }
                 }
             }
@@ -780,9 +888,22 @@ try {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
                     }
                 },
                 plugins: {
@@ -808,9 +929,22 @@ try {
             options: {
                 indexAxis: 'y',
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
                     }
                 },
                 plugins: {
@@ -840,9 +974,16 @@ try {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 8,
+                            font: {
+                                size: 10
+                            }
+                        }
                     }
                 }
             }
