@@ -809,7 +809,7 @@ try {
                         <h5 class="card-title mb-0">Estadísticas por Estado</h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="estadosChart" height="300"></canvas>
+                        <canvas id="estadosChart" height="100"></canvas>
                     </div>
                 </div>
             </div>
@@ -819,7 +819,7 @@ try {
                         <h5 class="card-title mb-0">Préstamos Activos</h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="prestamosChart" height="300"></canvas>
+                        <canvas id="prestamosChart" height="100"></canvas>
                     </div>
                 </div>
             </div>
