@@ -13,6 +13,87 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cambiar_estado'])) {
     // [Mantener el código existente para cambio de estado de préstamos]
 }
 
+
+function getAsistenciaHoy($id_estudiante)
+{
+    global $conn;
+    try {
+        $fecha_actual = date('Y-m-d');
+        $stmt = $conn->prepare("SELECT * FROM asistencia_biblioteca 
+                                    WHERE id_estudiante = :id_estudiante 
+                                    AND fecha = :fecha");
+        $stmt->bindParam(':id_estudiante', $id_estudiante);
+        $stmt->bindParam(':fecha', $fecha_actual);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw new Exception("Error al obtener asistencia: " . $e->getMessage());
+    }
+}
+
+function getUsoComputadorasHoy($id_estudiante)
+{
+    global $conn;
+    try {
+        $fecha_actual = date('Y-m-d');
+        $stmt = $conn->prepare("SELECT * FROM uso_computadoras 
+                                    WHERE id_estudiante = :id_estudiante 
+                                    AND fecha = :fecha");
+        $stmt->bindParam(':id_estudiante', $id_estudiante);
+        $stmt->bindParam(':fecha', $fecha_actual);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw new Exception("Error al obtener uso de computadoras: " . $e->getMessage());
+    }
+}
+
+function getEstadisticasFacultad($id_facultad)
+{
+    global $conn;
+    try {
+        $stmt = $conn->prepare("
+            SELECT 
+                COUNT(DISTINCT e.id_estudiante) as total_estudiantes,
+                COUNT(DISTINCT es.id_escuela) as total_escuelas,
+                COUNT(DISTINCT a.id_asistencia) as total_visitas
+            FROM facultades f
+            LEFT JOIN escuelas es ON f.id_facultad = es.id_facultad
+            LEFT JOIN estudiantes e ON es.id_escuela = e.id_escuela
+            LEFT JOIN asistencia_biblioteca a ON e.id_estudiante = a.id_estudiante
+            WHERE f.id_facultad = :id_facultad
+        ");
+        $stmt->bindParam(':id_facultad', $id_facultad);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw new Exception("Error al obtener estadísticas de la facultad: " . $e->getMessage());
+    }
+}
+
+function getEstadisticasEscuela($id_escuela)
+{
+    global $conn;
+    try {
+        $stmt = $conn->prepare("
+            SELECT 
+                COUNT(DISTINCT e.id_estudiante) as total_estudiantes,
+                COUNT(DISTINCT a.id_asistencia) as total_visitas,
+                COUNT(DISTINCT u.id_uso) as total_uso_computadoras
+            FROM escuelas es
+            LEFT JOIN estudiantes e ON es.id_escuela = e.id_escuela
+            LEFT JOIN asistencia_biblioteca a ON e.id_estudiante = a.id_estudiante
+            LEFT JOIN uso_computadoras u ON e.id_estudiante = u.id_estudiante
+            WHERE es.id_escuela = :id_escuela
+        ");
+        $stmt->bindParam(':id_escuela', $id_escuela);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw new Exception("Error al obtener estadísticas de la escuela: " . $e->getMessage());
+    }
+}
+
 // Procesar modificación de asistencia
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['modificar_asistencia'])) {
     $id_asistencia = $_POST['id_asistencia'];
@@ -192,7 +273,7 @@ try {
 // Obtener estudiantes actualmente en la biblioteca
 try {
     $fecha_actual = date('Y-m-d');
-   $stmt = $conn->prepare("SELECT a.id_asistencia, e.nombre, e.cedula, 
+    $stmt = $conn->prepare("SELECT a.id_asistencia, e.nombre, e.cedula, 
                         f.nombre AS facultad, esc.nombre AS escuela, 
                         e.correo, a.hora_entrada 
                       FROM asistencia_biblioteca a
@@ -238,18 +319,18 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-    .card-header {
-        font-weight: bold;
-    }
+        .card-header {
+            font-weight: bold;
+        }
 
-    .badge {
-        font-size: 0.9em;
-    }
+        .badge {
+            font-size: 0.9em;
+        }
 
-    .table-responsive {
-        max-height: 300px;
-        overflow-y: auto;
-    }
+        .table-responsive {
+            max-height: 300px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 
@@ -265,12 +346,12 @@ try {
         <h2 class="mb-4">Gestión de Préstamos de Libros</h2>
 
         <?php if (isset($_SESSION['mensaje'])): ?>
-        <div class="alert alert-success"><?php echo $_SESSION['mensaje'];
+            <div class="alert alert-success"><?php echo $_SESSION['mensaje'];
                                                 unset($_SESSION['mensaje']); ?></div>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?php echo $_SESSION['error'];
+            <div class="alert alert-danger"><?php echo $_SESSION['error'];
                                             unset($_SESSION['error']); ?></div>
         <?php endif; ?>
 
@@ -287,95 +368,96 @@ try {
                     </div>
                     <div class="card-body p-0">
                         <?php if (count($en_biblioteca) > 0): ?>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Estudiante</th>
-                                        <th>Cédula</th>
-                                        <th>Facultad</th>
-                                        <th>Hora Entrada</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($en_biblioteca as $estudiante): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['facultad']); ?></td>
-                                        <td><?php echo date('H:i', strtotime($estudiante['hora_entrada'])); ?></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#modalAsistencia<?php echo $estudiante['id_asistencia']; ?>">
-                                                <i class="bi bi-gear"></i> Modificar
-                                            </button>
-                                        </td>
-                                    </tr>
 
-                                    <!-- Modal para modificar asistencia -->
-                                    <div class="modal fade"
-                                        id="modalAsistencia<?php echo $estudiante['id_asistencia']; ?>" tabindex="-1"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Modificar Asistencia</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Estudiante</th>
+                                            <th>Cédula</th>
+                                            <th>Facultad</th>
+                                            <th>Hora Entrada</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($en_biblioteca as $estudiante): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
+                                                <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
+                                                <td><?php echo htmlspecialchars($estudiante['facultad']); ?></td>
+                                                <td><?php echo date('H:i', strtotime($estudiante['hora_entrada'])); ?></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                        data-bs-target="#modalAsistencia<?php echo $estudiante['id_asistencia']; ?>">
+                                                        <i class="bi bi-gear"></i> Modificar
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Modal para modificar asistencia -->
+                                            <div class="modal fade"
+                                                id="modalAsistencia<?php echo $estudiante['id_asistencia']; ?>" tabindex="-1"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Modificar Asistencia</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <form method="post" action="admin_prestamos.php">
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Estudiante:
+                                                                        <?php echo htmlspecialchars($estudiante['nombre']); ?></label>
+                                                                    <p><strong>Cédula:</strong>
+                                                                        <?php echo htmlspecialchars($estudiante['cedula']); ?>
+                                                                    </p>
+                                                                    <p><strong>Hora entrada:</strong>
+                                                                        <?php echo date('H:i', strtotime($estudiante['hora_entrada'])); ?>
+                                                                    </p>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Acción a realizar</label>
+                                                                    <select class="form-select" name="accion" required>
+                                                                        <option value="registrar_salida">Registrar salida
+                                                                        </option>
+                                                                        <option value="eliminar_registro">Eliminar registro
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="mb-3 modal-motivo">
+                                                                    <label
+                                                                        for="motivoAsistencia<?php echo $estudiante['id_asistencia']; ?>"
+                                                                        class="form-label">Motivo de la modificación</label>
+                                                                    <textarea class="form-control"
+                                                                        id="motivoAsistencia<?php echo $estudiante['id_asistencia']; ?>"
+                                                                        name="motivo" required></textarea>
+                                                                </div>
+
+                                                                <input type="hidden" name="id_asistencia"
+                                                                    value="<?php echo $estudiante['id_asistencia']; ?>">
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Cancelar</button>
+                                                                <button type="submit" name="modificar_asistencia"
+                                                                    class="btn btn-primary">Confirmar</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
-                                                <form method="post" action="admin_prestamos.php">
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Estudiante:
-                                                                <?php echo htmlspecialchars($estudiante['nombre']); ?></label>
-                                                            <p><strong>Cédula:</strong>
-                                                                <?php echo htmlspecialchars($estudiante['cedula']); ?>
-                                                            </p>
-                                                            <p><strong>Hora entrada:</strong>
-                                                                <?php echo date('H:i', strtotime($estudiante['hora_entrada'])); ?>
-                                                            </p>
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Acción a realizar</label>
-                                                            <select class="form-select" name="accion" required>
-                                                                <option value="registrar_salida">Registrar salida
-                                                                </option>
-                                                                <option value="eliminar_registro">Eliminar registro
-                                                                </option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="mb-3 modal-motivo">
-                                                            <label
-                                                                for="motivoAsistencia<?php echo $estudiante['id_asistencia']; ?>"
-                                                                class="form-label">Motivo de la modificación</label>
-                                                            <textarea class="form-control"
-                                                                id="motivoAsistencia<?php echo $estudiante['id_asistencia']; ?>"
-                                                                name="motivo" required></textarea>
-                                                        </div>
-
-                                                        <input type="hidden" name="id_asistencia"
-                                                            value="<?php echo $estudiante['id_asistencia']; ?>">
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cancelar</button>
-                                                        <button type="submit" name="modificar_asistencia"
-                                                            class="btn btn-primary">Confirmar</button>
-                                                    </div>
-                                                </form>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         <?php else: ?>
-                        <div class="alert alert-info m-3">No hay estudiantes registrados en la biblioteca actualmente.
-                        </div>
+                            <div class="alert alert-info m-3">No hay estudiantes registrados en la biblioteca actualmente.
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -392,104 +474,103 @@ try {
                     </div>
                     <div class="card-body p-0">
                         <?php if (count($en_computadoras) > 0): ?>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Estudiante</th>
-                                        <th>Cédula</th>
-                                        <th>Facultad</th>
-                                        <th>Computadora</th>
-                                        <th>Hora Inicio</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($en_computadoras as $estudiante): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['facultad']); ?></td>
-                                        <td>#<?php echo htmlspecialchars($estudiante['computadora_id']); ?></td>
-                                        <td><?php echo date('H:i', strtotime($estudiante['hora_inicio'])); ?></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#modalComputadora<?php echo $estudiante['id_uso']; ?>">
-                                                <i class="bi bi-gear"></i> Modificar
-                                            </button>
-                                        </td>
-                                    </tr>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Estudiante</th>
+                                            <th>Cédula</th>
+                                            <th>Facultad</th>
+                                            <th>Computadora</th>
+                                            <th>Hora Inicio</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($en_computadoras as $estudiante): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
+                                                <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
+                                                <td><?php echo htmlspecialchars($estudiante['facultad']); ?></td>
+                                                <td>#<?php echo htmlspecialchars($estudiante['computadora_id']); ?></td>
+                                                <td><?php echo date('H:i', strtotime($estudiante['hora_inicio'])); ?></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                        data-bs-target="#modalComputadora<?php echo $estudiante['id_uso']; ?>">
+                                                        <i class="bi bi-gear"></i> Modificar
+                                                    </button>
+                                                </td>
+                                            </tr>
 
-                                    <!-- Modal para modificar uso de computadora -->
-                                    <div class="modal fade" id="modalComputadora<?php echo $estudiante['id_uso']; ?>"
-                                        tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Modificar Uso de Computadora</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
+                                            <!-- Modal para modificar uso de computadora -->
+                                            <div class="modal fade" id="modalComputadora<?php echo $estudiante['id_uso']; ?>"
+                                                tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Modificar Uso de Computadora</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <form method="post" action="admin_prestamos.php">
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Estudiante:
+                                                                        <?php echo htmlspecialchars($estudiante['nombre']); ?></label>
+                                                                    <p><strong>Cédula:</strong>
+                                                                        <?php echo htmlspecialchars($estudiante['cedula']); ?>
+                                                                    </p>
+                                                                    <p><strong>Computadora #:</strong>
+                                                                        <?php echo htmlspecialchars($estudiante['computadora_id']); ?>
+                                                                    </p>
+                                                                    <p><strong>Hora inicio:</strong>
+                                                                        <?php echo date('H:i', strtotime($estudiante['hora_inicio'])); ?>
+                                                                    </p>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Acción a realizar</label>
+                                                                    <select class="form-select" name="accion" required>
+                                                                        <option value="registrar_fin">Registrar fin de uso
+                                                                        </option>
+                                                                        <option value="eliminar_registro">Eliminar registro
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="mb-3 modal-motivo">
+                                                                    <label
+                                                                        for="motivoComputadora<?php echo $estudiante['id_uso']; ?>"
+                                                                        class="form-label">Motivo de la modificación</label>
+                                                                    <textarea class="form-control"
+                                                                        id="motivoComputadora<?php echo $estudiante['id_uso']; ?>"
+                                                                        name="motivo" required></textarea>
+                                                                </div>
+
+                                                                <input type="hidden" name="id_uso"
+                                                                    value="<?php echo $estudiante['id_uso']; ?>">
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Cancelar</button>
+                                                                <button type="submit" name="modificar_computadora"
+                                                                    class="btn btn-primary">Confirmar</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
-                                                <form method="post" action="admin_prestamos.php">
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Estudiante:
-                                                                <?php echo htmlspecialchars($estudiante['nombre']); ?></label>
-                                                            <p><strong>Cédula:</strong>
-                                                                <?php echo htmlspecialchars($estudiante['cedula']); ?>
-                                                            </p>
-                                                            <p><strong>Computadora #:</strong>
-                                                                <?php echo htmlspecialchars($estudiante['computadora_id']); ?>
-                                                            </p>
-                                                            <p><strong>Hora inicio:</strong>
-                                                                <?php echo date('H:i', strtotime($estudiante['hora_inicio'])); ?>
-                                                            </p>
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Acción a realizar</label>
-                                                            <select class="form-select" name="accion" required>
-                                                                <option value="registrar_fin">Registrar fin de uso
-                                                                </option>
-                                                                <option value="eliminar_registro">Eliminar registro
-                                                                </option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="mb-3 modal-motivo">
-                                                            <label
-                                                                for="motivoComputadora<?php echo $estudiante['id_uso']; ?>"
-                                                                class="form-label">Motivo de la modificación</label>
-                                                            <textarea class="form-control"
-                                                                id="motivoComputadora<?php echo $estudiante['id_uso']; ?>"
-                                                                name="motivo" required></textarea>
-                                                        </div>
-
-                                                        <input type="hidden" name="id_uso"
-                                                            value="<?php echo $estudiante['id_uso']; ?>">
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cancelar</button>
-                                                        <button type="submit" name="modificar_computadora"
-                                                            class="btn btn-primary">Confirmar</button>
-                                                    </div>
-                                                </form>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         <?php else: ?>
-                        <div class="alert alert-info m-3">No hay estudiantes usando computadoras actualmente.</div>
+                            <div class="alert alert-info m-3">No hay estudiantes usando computadoras actualmente.</div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Sección: Estadísticas y filtros -->
         <div class="row mb-4">
             <div class="col-md-4">
@@ -591,13 +672,13 @@ try {
                         </thead>
                         <tbody>
                             <?php foreach ($solicitudes as $solicitud): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($solicitud['estudiante']); ?></td>
-                                <td><?php echo htmlspecialchars($solicitud['cedula']); ?></td>
-                                <td><?php echo htmlspecialchars($solicitud['libro']); ?></td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($solicitud['fecha_solicitud'])); ?></td>
-                                <td>
-                                    <span class="badge 
+                                <tr>
+                                    <td><?php echo htmlspecialchars($solicitud['estudiante']); ?></td>
+                                    <td><?php echo htmlspecialchars($solicitud['cedula']); ?></td>
+                                    <td><?php echo htmlspecialchars($solicitud['libro']); ?></td>
+                                    <td><?php echo date('d/m/Y H:i', strtotime($solicitud['fecha_solicitud'])); ?></td>
+                                    <td>
+                                        <span class="badge 
                                             <?php
                                             switch ($solicitud['estado']) {
                                                 case 'Aprobada':
@@ -616,103 +697,103 @@ try {
                                                     echo 'bg-warning text-dark';
                                             }
                                             ?>">
-                                        <?php echo htmlspecialchars($solicitud['estado']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php if ($solicitud['fecha_prestamo']): ?>
-                                    <?php echo date('d/m/Y', strtotime($solicitud['fecha_prestamo'])); ?>
-                                    <?php else: ?>
-                                    --
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($solicitud['fecha_devolucion_real']): ?>
-                                    <?php echo date('d/m/Y', strtotime($solicitud['fecha_devolucion_real'])); ?>
-                                    <?php elseif ($solicitud['fecha_devolucion_esperada']): ?>
-                                    <?php echo date('d/m/Y', strtotime($solicitud['fecha_devolucion_esperada'])); ?>
-                                    <?php if (strtotime($solicitud['fecha_devolucion_esperada']) < time()): ?>
-                                    <span class="badge bg-danger">Atrasado</span>
-                                    <?php endif; ?>
-                                    <?php else: ?>
-                                    --
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#modalCambiarEstado<?php echo $solicitud['id_solicitud']; ?>">
-                                        <i class="bi bi-pencil"></i> Cambiar estado
-                                    </button>
-                                </td>
-                            </tr>
+                                            <?php echo htmlspecialchars($solicitud['estado']); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($solicitud['fecha_prestamo']): ?>
+                                            <?php echo date('d/m/Y', strtotime($solicitud['fecha_prestamo'])); ?>
+                                        <?php else: ?>
+                                            --
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($solicitud['fecha_devolucion_real']): ?>
+                                            <?php echo date('d/m/Y', strtotime($solicitud['fecha_devolucion_real'])); ?>
+                                        <?php elseif ($solicitud['fecha_devolucion_esperada']): ?>
+                                            <?php echo date('d/m/Y', strtotime($solicitud['fecha_devolucion_esperada'])); ?>
+                                            <?php if (strtotime($solicitud['fecha_devolucion_esperada']) < time()): ?>
+                                                <span class="badge bg-danger">Atrasado</span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            --
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#modalCambiarEstado<?php echo $solicitud['id_solicitud']; ?>">
+                                            <i class="bi bi-pencil"></i> Cambiar estado
+                                        </button>
+                                    </td>
+                                </tr>
 
-                            <!-- Modal para cambiar estado -->
-                            <div class="modal fade" id="modalCambiarEstado<?php echo $solicitud['id_solicitud']; ?>"
-                                tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Cambiar estado de solicitud</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                <!-- Modal para cambiar estado -->
+                                <div class="modal fade" id="modalCambiarEstado<?php echo $solicitud['id_solicitud']; ?>"
+                                    tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Cambiar estado de solicitud</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form method="post" action="admin_prestamos.php">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Solicitud de
+                                                            <?php echo htmlspecialchars($solicitud['estudiante']); ?></label>
+                                                        <p><strong>Libro:</strong>
+                                                            <?php echo htmlspecialchars($solicitud['libro']); ?></p>
+                                                        <p><strong>Estado actual:</strong>
+                                                            <?php echo htmlspecialchars($solicitud['estado']); ?></p>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="nuevo_estado<?php echo $solicitud['id_solicitud']; ?>"
+                                                            class="form-label">Nuevo estado</label>
+                                                        <select class="form-select"
+                                                            id="nuevo_estado<?php echo $solicitud['id_solicitud']; ?>"
+                                                            name="nuevo_estado" required>
+                                                            <option value="Pendiente"
+                                                                <?php if ($solicitud['estado'] == 'Pendiente') echo 'selected'; ?>>
+                                                                Pendiente</option>
+                                                            <option value="Aprobada"
+                                                                <?php if ($solicitud['estado'] == 'Aprobada') echo 'selected'; ?>>
+                                                                Aprobada</option>
+                                                            <option value="Rechazada"
+                                                                <?php if ($solicitud['estado'] == 'Rechazada') echo 'selected'; ?>>
+                                                                Rechazada</option>
+                                                            <option value="Entregado"
+                                                                <?php if ($solicitud['estado'] == 'Entregado') echo 'selected'; ?>>
+                                                                Entregado</option>
+                                                            <option value="Devuelto"
+                                                                <?php if ($solicitud['estado'] == 'Devuelto') echo 'selected'; ?>>
+                                                                Devuelto</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="observaciones<?php echo $solicitud['id_solicitud']; ?>"
+                                                            class="form-label">Observaciones</label>
+                                                        <textarea class="form-control"
+                                                            id="observaciones<?php echo $solicitud['id_solicitud']; ?>"
+                                                            name="observaciones"
+                                                            rows="3"><?php echo htmlspecialchars($solicitud['observaciones'] ?? ''); ?></textarea>
+                                                    </div>
+
+                                                    <input type="hidden" name="id_solicitud"
+                                                        value="<?php echo $solicitud['id_solicitud']; ?>">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" name="cambiar_estado"
+                                                        class="btn btn-primary">Guardar cambios</button>
+                                                </div>
+                                            </form>
                                         </div>
-                                        <form method="post" action="admin_prestamos.php">
-                                            <div class="modal-body">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Solicitud de
-                                                        <?php echo htmlspecialchars($solicitud['estudiante']); ?></label>
-                                                    <p><strong>Libro:</strong>
-                                                        <?php echo htmlspecialchars($solicitud['libro']); ?></p>
-                                                    <p><strong>Estado actual:</strong>
-                                                        <?php echo htmlspecialchars($solicitud['estado']); ?></p>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label for="nuevo_estado<?php echo $solicitud['id_solicitud']; ?>"
-                                                        class="form-label">Nuevo estado</label>
-                                                    <select class="form-select"
-                                                        id="nuevo_estado<?php echo $solicitud['id_solicitud']; ?>"
-                                                        name="nuevo_estado" required>
-                                                        <option value="Pendiente"
-                                                            <?php if ($solicitud['estado'] == 'Pendiente') echo 'selected'; ?>>
-                                                            Pendiente</option>
-                                                        <option value="Aprobada"
-                                                            <?php if ($solicitud['estado'] == 'Aprobada') echo 'selected'; ?>>
-                                                            Aprobada</option>
-                                                        <option value="Rechazada"
-                                                            <?php if ($solicitud['estado'] == 'Rechazada') echo 'selected'; ?>>
-                                                            Rechazada</option>
-                                                        <option value="Entregado"
-                                                            <?php if ($solicitud['estado'] == 'Entregado') echo 'selected'; ?>>
-                                                            Entregado</option>
-                                                        <option value="Devuelto"
-                                                            <?php if ($solicitud['estado'] == 'Devuelto') echo 'selected'; ?>>
-                                                            Devuelto</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label for="observaciones<?php echo $solicitud['id_solicitud']; ?>"
-                                                        class="form-label">Observaciones</label>
-                                                    <textarea class="form-control"
-                                                        id="observaciones<?php echo $solicitud['id_solicitud']; ?>"
-                                                        name="observaciones"
-                                                        rows="3"><?php echo htmlspecialchars($solicitud['observaciones'] ?? ''); ?></textarea>
-                                                </div>
-
-                                                <input type="hidden" name="id_solicitud"
-                                                    value="<?php echo $solicitud['id_solicitud']; ?>">
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="submit" name="cambiar_estado"
-                                                    class="btn btn-primary">Guardar cambios</button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
-                            </div>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -747,87 +828,87 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Mostrar spinner al enviar formularios
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        form.addEventListener('submit', function() {
-            document.getElementById('globalSpinner').style.display = 'flex';
+        // Mostrar spinner al enviar formularios
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+            });
         });
-    });
 
-    // Mostrar spinner al hacer clic en botones de acción
-    const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            document.getElementById('globalSpinner').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('globalSpinner').style.display = 'none';
-            }, 500);
+        // Mostrar spinner al hacer clic en botones de acción
+        const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('globalSpinner').style.display = 'none';
+                }, 500);
+            });
         });
-    });
 
-    // Ocultar spinner al cargar la página
-    window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('globalSpinner').style.display = 'none';
-    });
+        // Ocultar spinner al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('globalSpinner').style.display = 'none';
+        });
 
-    // Gráfico de estados
-    const estadosCtx = document.getElementById('estadosChart').getContext('2d');
-    const estadosChart = new Chart(estadosCtx, {
-        type: 'pie',
-        data: {
-            labels: [<?php foreach ($estadisticas_estados as $e) echo "'" . $e['estado'] . "',"; ?>],
-            datasets: [{
-                data: [<?php foreach ($estadisticas_estados as $e) echo $e['cantidad'] . ","; ?>],
-                backgroundColor: [
-                    'rgba(255, 206, 86, 0.7)',
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(255, 99, 132, 0.7)',
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(153, 102, 255, 0.7)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
+        // Gráfico de estados
+        const estadosCtx = document.getElementById('estadosChart').getContext('2d');
+        const estadosChart = new Chart(estadosCtx, {
+            type: 'pie',
+            data: {
+                labels: [<?php foreach ($estadisticas_estados as $e) echo "'" . $e['estado'] . "',"; ?>],
+                datasets: [{
+                    data: [<?php foreach ($estadisticas_estados as $e) echo $e['cantidad'] . ","; ?>],
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
             }
-        }
-    });
+        });
 
-    // Gráfico de préstamos
-    const prestamosCtx = document.getElementById('prestamosChart').getContext('2d');
-    const prestamosChart = new Chart(prestamosCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['En tiempo', 'Atrasados', 'Perdidos'],
-            datasets: [{
-                data: [
-                    <?php echo $estadisticas_prestamos['total'] - $estadisticas_prestamos['atrasados'] - $estadisticas_prestamos['perdidos']; ?>,
-                    <?php echo $estadisticas_prestamos['atrasados']; ?>,
-                    <?php echo $estadisticas_prestamos['perdidos']; ?>
-                ],
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(255, 206, 86, 0.7)',
-                    'rgba(255, 99, 132, 0.7)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
+        // Gráfico de préstamos
+        const prestamosCtx = document.getElementById('prestamosChart').getContext('2d');
+        const prestamosChart = new Chart(prestamosCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['En tiempo', 'Atrasados', 'Perdidos'],
+                datasets: [{
+                    data: [
+                        <?php echo $estadisticas_prestamos['total'] - $estadisticas_prestamos['atrasados'] - $estadisticas_prestamos['perdidos']; ?>,
+                        <?php echo $estadisticas_prestamos['atrasados']; ?>,
+                        <?php echo $estadisticas_prestamos['perdidos']; ?>
+                    ],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
             }
-        }
-    });
+        });
     </script>
 </body>
 

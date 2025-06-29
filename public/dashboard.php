@@ -229,8 +229,7 @@ try {
                         <div class="text-center mb-4">
                             <div class="profile-image-container">
                                 <img src="<?php echo !empty($estudiante['foto']) ? htmlspecialchars($estudiante['foto']) : '../src/assets/img/default-profile.png'; ?>"
-                                    class="profile-img mb-3"
-                                    alt="Foto perfil">
+                                    class="profile-img mb-3" alt="Foto perfil">
                                 <div
                                     class="profile-status <?php echo $asistencia ? 'status-active' : 'status-inactive'; ?>">
                                     <i class="bi <?php echo $asistencia ? 'bi-circle-fill' : 'bi-circle'; ?>"></i>
@@ -255,7 +254,8 @@ try {
                                 <i class="bi bi-building"></i>
                                 <div class="info-content">
                                     <span class="info-label">Facultad</span>
-                                    <span class="info-value"><?php echo htmlspecialchars($estudiante['nombre_facultad'] ?? 'No asignada'); ?></span>
+                                    <span
+                                        class="info-value"><?php echo htmlspecialchars($estudiante['nombre_facultad'] ?? 'No asignada'); ?></span>
                                     <?php if (!empty($estudiante['nombre_facultad'])): ?>
                                         <small class="text-muted d-block">
                                             <?php
@@ -271,7 +271,8 @@ try {
                                 <i class="bi bi-mortarboard"></i>
                                 <div class="info-content">
                                     <span class="info-label">Escuela</span>
-                                    <span class="info-value"><?php echo htmlspecialchars($estudiante['nombre_escuela'] ?? 'No asignada'); ?></span>
+                                    <span
+                                        class="info-value"><?php echo htmlspecialchars($estudiante['nombre_escuela'] ?? 'No asignada'); ?></span>
                                     <?php if (!empty($estudiante['nombre_escuela'])): ?>
                                         <small class="text-muted d-block">
                                             <?php
@@ -326,76 +327,6 @@ try {
                         </form>
                     </div>
                 </div>
-
-                <?php if (!empty($estudiante['id_facultad']) || !empty($estudiante['id_escuela'])): ?>
-                    <div class="card mb-4">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="card-title mb-0">Estadísticas de tu Unidad Académica</h5>
-                        </div>
-                        <div class="card-body">
-                            <?php if (!empty($estudiante['id_facultad'])): ?>
-                                <?php
-                                $statsFacultad = $dashboardController->getEstadisticasFacultad($estudiante['id_facultad']);
-                                ?>
-                                <h6 class="mb-3">Facultad: <?php echo htmlspecialchars($estudiante['nombre_facultad']); ?></h6>
-                                <div class="row text-center">
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <i class="bi bi-people-fill"></i>
-                                            <h4><?php echo $statsFacultad['total_estudiantes']; ?></h4>
-                                            <small>Estudiantes</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <i class="bi bi-building"></i>
-                                            <h4><?php echo $statsFacultad['total_escuelas']; ?></h4>
-                                            <small>Escuelas</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <i class="bi bi-door-open"></i>
-                                            <h4><?php echo $statsFacultad['total_visitas']; ?></h4>
-                                            <small>Visitas</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($estudiante['id_escuela'])): ?>
-                                <?php
-                                $statsEscuela = $dashboardController->getEstadisticasEscuela($estudiante['id_escuela']);
-                                ?>
-                                <hr class="my-4">
-                                <h6 class="mb-3">Escuela: <?php echo htmlspecialchars($estudiante['nombre_escuela']); ?></h6>
-                                <div class="row text-center">
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <i class="bi bi-person-fill"></i>
-                                            <h4><?php echo $statsEscuela['total_estudiantes']; ?></h4>
-                                            <small>Estudiantes</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <i class="bi bi-door-open"></i>
-                                            <h4><?php echo $statsEscuela['total_visitas']; ?></h4>
-                                            <small>Visitas</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-item">
-                                            <i class="bi bi-pc-display"></i>
-                                            <h4><?php echo $statsEscuela['total_uso_computadoras']; ?></h4>
-                                            <small>Uso PC</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
             </div>
 
             <div class="col-md-8">

@@ -189,6 +189,7 @@ function eliminarEscuela($id)
         return "Error al eliminar escuela: " . $e->getMessage();
     }
 }
+
 // Obtener estadísticas
 try {
     // Total estudiantes registrados
@@ -272,7 +273,6 @@ try {
     die("Error: " . $e->getMessage());
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -423,11 +423,11 @@ try {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($escuelas as $escuela): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
-                                            <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
-                                            <td><?php echo $escuela['cantidad']; ?></td>
-                                        </tr>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($escuela['escuela']); ?></td>
+                                                <td><?php echo htmlspecialchars($escuela['facultad']); ?></td>
+                                                <td><?php echo $escuela['cantidad']; ?></td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -454,12 +454,12 @@ try {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($uso_por_facultad as $facultad): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($facultad['facultad']); ?></td>
-                                            <td><?php echo $facultad['estudiantes']; ?></td>
-                                            <td><?php echo $facultad['total_uso']; ?></td>
-                                            <td><?php echo $facultad['tiempo_promedio']; ?></td>
-                                        </tr>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($facultad['facultad']); ?></td>
+                                                <td><?php echo $facultad['estudiantes']; ?></td>
+                                                <td><?php echo $facultad['total_uso']; ?></td>
+                                                <td><?php echo $facultad['tiempo_promedio']; ?></td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -494,25 +494,25 @@ try {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($todas_facultades as $facultad): ?>
-                                    <tr>
-                                        <td><?= $facultad['id_facultad'] ?></td>
-                                        <td><?= htmlspecialchars($facultad['nombre']) ?></td>
-                                        <td><?= htmlspecialchars($facultad['descripcion'] ?? 'N/A') ?></td>
-                                        <td><?= contarEscuelasPorFacultad($facultad['id_facultad']) ?></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#editarFacultadModal"
-                                                data-id="<?= $facultad['id_facultad'] ?>"
-                                                data-nombre="<?= htmlspecialchars($facultad['nombre']) ?>"
-                                                data-descripcion="<?= htmlspecialchars($facultad['descripcion'] ?? '') ?>">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger"
-                                                onclick="confirmarEliminarFacultad(<?= $facultad['id_facultad'] ?>)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td><?= $facultad['id_facultad'] ?></td>
+                                            <td><?= htmlspecialchars($facultad['nombre']) ?></td>
+                                            <td><?= htmlspecialchars($facultad['descripcion'] ?? 'N/A') ?></td>
+                                            <td><?= contarEscuelasPorFacultad($facultad['id_facultad']) ?></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                    data-bs-target="#editarFacultadModal"
+                                                    data-id="<?= $facultad['id_facultad'] ?>"
+                                                    data-nombre="<?= htmlspecialchars($facultad['nombre']) ?>"
+                                                    data-descripcion="<?= htmlspecialchars($facultad['descripcion'] ?? '') ?>">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    onclick="confirmarEliminarFacultad(<?= $facultad['id_facultad'] ?>)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
@@ -545,26 +545,26 @@ try {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($todas_escuelas as $escuela): ?>
-                                    <tr>
-                                        <td><?= $escuela['id_escuela'] ?></td>
-                                        <td><?= htmlspecialchars($escuela['nombre']) ?></td>
-                                        <td><?= htmlspecialchars($escuela['facultad_nombre']) ?></td>
-                                        <td><?= htmlspecialchars($escuela['descripcion'] ?? 'N/A') ?></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#editarEscuelaModal"
-                                                data-id="<?= $escuela['id_escuela'] ?>"
-                                                data-nombre="<?= htmlspecialchars($escuela['nombre']) ?>"
-                                                data-facultad="<?= $escuela['id_facultad'] ?>"
-                                                data-descripcion="<?= htmlspecialchars($escuela['descripcion'] ?? '') ?>">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger"
-                                                onclick="confirmarEliminarEscuela(<?= $escuela['id_escuela'] ?>)">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td><?= $escuela['id_escuela'] ?></td>
+                                            <td><?= htmlspecialchars($escuela['nombre']) ?></td>
+                                            <td><?= htmlspecialchars($escuela['facultad_nombre']) ?></td>
+                                            <td><?= htmlspecialchars($escuela['descripcion'] ?? 'N/A') ?></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                    data-bs-target="#editarEscuelaModal"
+                                                    data-id="<?= $escuela['id_escuela'] ?>"
+                                                    data-nombre="<?= htmlspecialchars($escuela['nombre']) ?>"
+                                                    data-facultad="<?= $escuela['id_facultad'] ?>"
+                                                    data-descripcion="<?= htmlspecialchars($escuela['descripcion'] ?? '') ?>">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    onclick="confirmarEliminarEscuela(<?= $escuela['id_escuela'] ?>)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
@@ -655,8 +655,8 @@ try {
                             <label for="facultadEscuela" class="form-label">Facultad</label>
                             <select class="form-select" id="facultadEscuela" name="id_facultad" required>
                                 <?php foreach ($todas_facultades as $facultad): ?>
-                                <option value="<?= $facultad['id_facultad'] ?>">
-                                    <?= htmlspecialchars($facultad['nombre']) ?></option>
+                                    <option value="<?= $facultad['id_facultad'] ?>">
+                                        <?= htmlspecialchars($facultad['nombre']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -695,8 +695,8 @@ try {
                             <label for="editFacultadEscuela" class="form-label">Facultad</label>
                             <select class="form-select" id="editFacultadEscuela" name="id_facultad" required>
                                 <?php foreach ($todas_facultades as $facultad): ?>
-                                <option value="<?= $facultad['id_facultad'] ?>">
-                                    <?= htmlspecialchars($facultad['nombre']) ?></option>
+                                    <option value="<?= $facultad['id_facultad'] ?>">
+                                        <?= htmlspecialchars($facultad['nombre']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -717,174 +717,174 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Mostrar spinner al enviar formularios
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        form.addEventListener('submit', function() {
-            document.getElementById('globalSpinner').style.display = 'flex';
+        // Mostrar spinner al enviar formularios
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+            });
         });
-    });
 
-    // Mostrar spinner al hacer clic en botones de acción
-    const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            document.getElementById('globalSpinner').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('globalSpinner').style.display = 'none';
-            }, 500);
+        // Mostrar spinner al hacer clic en botones de acción
+        const actionButtons = document.querySelectorAll('button[data-bs-toggle="modal"]');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('globalSpinner').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('globalSpinner').style.display = 'none';
+                }, 500);
+            });
         });
-    });
 
-    // Ocultar spinner al cargar la página
-    window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('globalSpinner').style.display = 'none';
-    });
+        // Ocultar spinner al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('globalSpinner').style.display = 'none';
+        });
 
-    // Gráficos (el mismo código anterior)
-    const generoCtx = document.getElementById('generoChart').getContext('2d');
-    const generoChart = new Chart(generoCtx, {
-        type: 'pie',
-        data: {
-            labels: [<?php foreach ($generos as $g) echo "'" . $g['genero'] . "',"; ?>],
-            datasets: [{
-                data: [<?php foreach ($generos as $g) echo $g['cantidad'] . ","; ?>],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(255, 99, 132, 0.7)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-
-    const turnoCtx = document.getElementById('turnoChart').getContext('2d');
-    const turnoChart = new Chart(turnoCtx, {
-        type: 'bar',
-        data: {
-            labels: [<?php foreach ($turnos as $t) echo "'" . $t['turno'] . "',"; ?>],
-            datasets: [{
-                label: 'Visitas',
-                data: [<?php foreach ($turnos as $t) echo $t['cantidad'] . ","; ?>],
-                backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+        // Gráficos (el mismo código anterior)
+        const generoCtx = document.getElementById('generoChart').getContext('2d');
+        const generoChart = new Chart(generoCtx, {
+            type: 'pie',
+            data: {
+                labels: [<?php foreach ($generos as $g) echo "'" . $g['genero'] . "',"; ?>],
+                datasets: [{
+                    data: [<?php foreach ($generos as $g) echo $g['cantidad'] . ","; ?>],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
             }
-        }
-    });
+        });
 
-    const facultadCtx = document.getElementById('facultadChart').getContext('2d');
-    const facultadChart = new Chart(facultadCtx, {
-        type: 'bar',
-        data: {
-            labels: [<?php foreach ($facultades as $f) echo "'" . $f['facultad'] . "',"; ?>],
-            datasets: [{
-                label: 'Visitas',
-                data: [<?php foreach ($facultades as $f) echo $f['cantidad'] . ","; ?>],
-                backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            scales: {
-                x: {
-                    beginAtZero: true
-                }
+        const turnoCtx = document.getElementById('turnoChart').getContext('2d');
+        const turnoChart = new Chart(turnoCtx, {
+            type: 'bar',
+            data: {
+                labels: [<?php foreach ($turnos as $t) echo "'" . $t['turno'] . "',"; ?>],
+                datasets: [{
+                    label: 'Visitas',
+                    data: [<?php foreach ($turnos as $t) echo $t['cantidad'] . ","; ?>],
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderWidth: 1
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 }
             }
-        }
-    });
+        });
 
-    const categoriaCtx = document.getElementById('categoriaChart').getContext('2d');
-    const categoriaChart = new Chart(categoriaCtx, {
-        type: 'doughnut',
-        data: {
-            labels: [<?php foreach ($categorias as $c) echo "'" . $c['nombre'] . "',"; ?>],
-            datasets: [{
-                data: [<?php foreach ($categorias as $c) echo $c['cantidad'] . ","; ?>],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.7)',
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(255, 206, 86, 0.7)',
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(153, 102, 255, 0.7)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
+        const facultadCtx = document.getElementById('facultadChart').getContext('2d');
+        const facultadChart = new Chart(facultadCtx, {
+            type: 'bar',
+            data: {
+                labels: [<?php foreach ($facultades as $f) echo "'" . $f['facultad'] . "',"; ?>],
+                datasets: [{
+                    label: 'Visitas',
+                    data: [<?php foreach ($facultades as $f) echo $f['cantidad'] . ","; ?>],
+                    backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 }
             }
+        });
+
+        const categoriaCtx = document.getElementById('categoriaChart').getContext('2d');
+        const categoriaChart = new Chart(categoriaCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [<?php foreach ($categorias as $c) echo "'" . $c['nombre'] . "',"; ?>],
+                datasets: [{
+                    data: [<?php foreach ($categorias as $c) echo $c['cantidad'] . ","; ?>],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Configurar modales de edición
+        document.getElementById('editarFacultadModal').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const nombre = button.getAttribute('data-nombre');
+            const descripcion = button.getAttribute('data-descripcion');
+
+            document.getElementById('editFacultadId').value = id;
+            document.getElementById('editNombreFacultad').value = nombre;
+            document.getElementById('editDescripcionFacultad').value = descripcion;
+        });
+
+        document.getElementById('editarEscuelaModal').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const nombre = button.getAttribute('data-nombre');
+            const facultad = button.getAttribute('data-facultad');
+            const descripcion = button.getAttribute('data-descripcion');
+
+            document.getElementById('editEscuelaId').value = id;
+            document.getElementById('editNombreEscuela').value = nombre;
+            document.getElementById('editFacultadEscuela').value = facultad;
+            document.getElementById('editDescripcionEscuela').value = descripcion;
+        });
+
+        // Funciones para confirmar eliminación
+        function confirmarEliminarFacultad(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta facultad?')) {
+                window.location.href = `gestion_facultades.php?accion=eliminar&id=${id}`;
+            }
         }
-    });
 
-    // Configurar modales de edición
-    document.getElementById('editarFacultadModal').addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
-        const nombre = button.getAttribute('data-nombre');
-        const descripcion = button.getAttribute('data-descripcion');
-
-        document.getElementById('editFacultadId').value = id;
-        document.getElementById('editNombreFacultad').value = nombre;
-        document.getElementById('editDescripcionFacultad').value = descripcion;
-    });
-
-    document.getElementById('editarEscuelaModal').addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
-        const nombre = button.getAttribute('data-nombre');
-        const facultad = button.getAttribute('data-facultad');
-        const descripcion = button.getAttribute('data-descripcion');
-
-        document.getElementById('editEscuelaId').value = id;
-        document.getElementById('editNombreEscuela').value = nombre;
-        document.getElementById('editFacultadEscuela').value = facultad;
-        document.getElementById('editDescripcionEscuela').value = descripcion;
-    });
-
-    // Funciones para confirmar eliminación
-    function confirmarEliminarFacultad(id) {
-        if (confirm('¿Estás seguro de que deseas eliminar esta facultad?')) {
-            window.location.href = `gestion_facultades.php?accion=eliminar&id=${id}`;
+        function confirmarEliminarEscuela(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta escuela?')) {
+                window.location.href = `gestion_escuelas.php?accion=eliminar&id=${id}`;
+            }
         }
-    }
-
-    function confirmarEliminarEscuela(id) {
-        if (confirm('¿Estás seguro de que deseas eliminar esta escuela?')) {
-            window.location.href = `gestion_escuelas.php?accion=eliminar&id=${id}`;
-        }
-    }
     </script>
 </body>
 
