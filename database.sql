@@ -1,4 +1,6 @@
-Create Database if not exists `cruba_library`:
+-- Creación de la base de datos y selección de uso
+CREATE DATABASE IF NOT EXISTS `cruba_library`;
+
 USE `cruba_library`;
 -- Base de datos: `cruba_library`
 --
@@ -10,11 +12,12 @@ USE `cruba_library`;
 --
 
 CREATE TABLE `administradores` (
-    `id_admin` int(11) NOT NULL,
+    `id_admin` int(11) NOT NULL AUTO_INCREMENT,
     `cedula` varchar(20) NOT NULL,
     `nombre` varchar(100) NOT NULL,
     `email` varchar(100) DEFAULT NULL,
-    `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP
+    `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id_admin`)
 );
 
 --
@@ -38,14 +41,14 @@ VALUES (
     ),
     (
         2,
-        '',
+        '4-888-0001',
         'Carlos Mendoza',
         'carlos.mendoza@biblioteca.edu',
         '2025-06-02 18:58:00'
     ),
     (
         3,
-        '',
+        '4-999-0002',
         'Laura Jiménez',
         'laura.jimenez@biblioteca.edu',
         '2025-06-02 18:58:00'
@@ -54,15 +57,465 @@ VALUES (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `asistencia_biblioteca`
+-- Estructura de tabla para la tabla `categorias_libros`
 --
 
+CREATE TABLE `categorias_libros` (
+    `id_categoria` int(11) NOT NULL AUTO_INCREMENT,
+    `nombre` varchar(50) NOT NULL,
+    `descripcion` text,
+    PRIMARY KEY (`id_categoria`)
+);
+
+--
+-- Volcado de datos para la tabla `categorias_libros`
+--
+
+INSERT INTO
+    `categorias_libros` (
+        `id_categoria`,
+        `nombre`,
+        `descripcion`
+    )
+VALUES (
+        1,
+        'Ciencias',
+        'Libros sobre ciencias naturales y exactas'
+    ),
+    (
+        2,
+        'Literatura',
+        'Obras literarias clásicas y contemporáneas'
+    ),
+    (
+        3,
+        'Tecnología',
+        'Libros sobre tecnología e informática'
+    ),
+    (
+        4,
+        'Salud',
+        'Libros sobre medicina y ciencias de la salud'
+    ),
+    (
+        5,
+        'Historia',
+        'Libros sobre eventos históricos'
+    ),
+    (
+        6,
+        'Negocios',
+        'Libros sobre administración y economía'
+    );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `facultades`
+--
+CREATE TABLE `facultades` (
+    `id_facultad` int(11) NOT NULL AUTO_INCREMENT,
+    `nombre` varchar(100) NOT NULL,
+    `descripcion` text,
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id_facultad`)
+);
+
+--
+-- Volcado de datos para la tabla `facultades`
+--
+
+INSERT INTO
+    `facultades` (
+        `id_facultad`,
+        `nombre`,
+        `descripcion`,
+        `created_at`
+    )
+VALUES (
+        1,
+        'Facultad de Ciencias',
+        'Dedicada a las ciencias básicas y naturales',
+        '2025-06-13 20:00:57'
+    ),
+    (
+        2,
+        'Facultad de Ingeniería',
+        'Formación en diversas ramas de la ingeniería',
+        '2025-06-13 20:00:57'
+    ),
+    (
+        3,
+        'Facultad de Medicina',
+        'Formación de profesionales de la salud',
+        '2025-06-13 20:00:57'
+    ),
+    (
+        4,
+        'Facultad de Humanidades',
+        'Estudios en artes, letras y ciencias sociales',
+        '2025-06-13 20:00:57'
+    ),
+    (
+        5,
+        'Facultad de Derecho',
+        'Formación en ciencias jurídicas',
+        '2025-06-13 20:00:57'
+    ),
+    (
+        6,
+        'Facultad de Economía',
+        'Estudios económicos y empresariales',
+        '2025-06-13 20:00:57'
+    );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `escuelas`
+--
+CREATE TABLE `escuelas` (
+    `id_escuela` int(11) NOT NULL AUTO_INCREMENT,
+    `nombre` varchar(100) NOT NULL,
+    `id_facultad` int(11) DEFAULT NULL,
+    `descripcion` text,
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id_escuela`),
+    FOREIGN KEY (`id_facultad`) REFERENCES `facultades` (`id_facultad`)
+);
+
+--
+-- Volcado de datos para la tabla `escuelas`
+--
+
+INSERT INTO
+    `escuelas` (
+        `id_escuela`,
+        `nombre`,
+        `id_facultad`,
+        `descripcion`,
+        `created_at`
+    )
+VALUES (
+        1,
+        'Escuela de Matemáticas',
+        1,
+        'Programas de matemáticas puras y aplicadas',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        2,
+        'Escuela de Física',
+        1,
+        'Estudios en física teórica y experimental',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        3,
+        'Escuela de Ingeniería Civil',
+        2,
+        'Formación en construcción e infraestructura',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        4,
+        'Escuela de Ingeniería de Sistemas',
+        2,
+        'Ciencias de la computación y TI',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        5,
+        'Escuela de Medicina Humana',
+        3,
+        'Formación de médicos cirujanos',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        6,
+        'Escuela de Enfermería',
+        3,
+        'Formación de profesionales en enfermería',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        7,
+        'Escuela de Literatura',
+        4,
+        'Estudios lingüísticos y literarios',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        8,
+        'Escuela de Historia',
+        4,
+        'Investigación histórica y antropológica',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        9,
+        'Escuela de Derecho Civil',
+        5,
+        'Especialización en derecho privado',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        10,
+        'Escuela de Derecho Penal',
+        5,
+        'Especialización en derecho público',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        11,
+        'Escuela de Economía',
+        6,
+        'Teoría económica y análisis financiero',
+        '2025-06-13 20:01:31'
+    ),
+    (
+        12,
+        'Escuela de Administración',
+        6,
+        'Gestión empresarial y emprendimiento',
+        '2025-06-13 20:01:31'
+    );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estudiantes`
+--
+
+CREATE TABLE `estudiantes` (
+    `id_estudiante` int(11) NOT NULL AUTO_INCREMENT,
+    `foto` text NOT NULL,
+    `nombre` varchar(100) NOT NULL,
+    `cedula` varchar(20) NOT NULL,
+    `fecha_nacimiento` date DEFAULT NULL,
+    `tipo_sangre` varchar(5) DEFAULT NULL,
+    `id_facultad` int(11) DEFAULT NULL,
+    `id_escuela` int(11) DEFAULT NULL,
+    `genero` enum('Masculino', 'Femenino') DEFAULT NULL,
+    `correo` varchar(100) NOT NULL,
+    `activo` tinyint(1) DEFAULT '1',
+    PRIMARY KEY (`id_estudiante`),
+    UNIQUE KEY `cedula` (`cedula`),
+    FOREIGN KEY (`id_facultad`) REFERENCES `facultades` (`id_facultad`),
+    FOREIGN KEY (`id_escuela`) REFERENCES `escuelas` (`id_escuela`)
+);
+
+--
+-- Volcado de datos para la tabla `estudiantes`
+--
+
+INSERT INTO
+    `estudiantes` (
+        `id_estudiante`,
+        `foto`,
+        `nombre`,
+        `cedula`,
+        `fecha_nacimiento`,
+        `tipo_sangre`,
+        `id_facultad`,
+        `id_escuela`,
+        `genero`,
+        `correo`,
+        `activo`
+    )
+VALUES (
+        1,
+        '',
+        'Juan Pérez',
+        '001-1234567-8',
+        '1998-05-15',
+        'O+',
+        2,
+        4,
+        'Masculino',
+        'juan.perez@cruba.edu.do',
+        1
+    ),
+    (
+        2,
+        '',
+        'María Rodríguez',
+        '002-9876543-1',
+        '1999-07-22',
+        'A-',
+        3,
+        5,
+        'Femenino',
+        'maria.rodriguez@cruba.edu.do',
+        1
+    ),
+    (
+        3,
+        '',
+        'Carlos García',
+        '003-4567890-2',
+        '2000-02-10',
+        'B+',
+        6,
+        12,
+        'Masculino',
+        'carlos.garcia@cruba.edu.do',
+        1
+    ),
+    (
+        4,
+        '',
+        'Ana Martínez',
+        '004-3216549-7',
+        '1997-11-30',
+        'AB+',
+        4,
+        7,
+        'Femenino',
+        'ana.martinez@cruba.edu.do',
+        1
+    ),
+    (
+        5,
+        '',
+        'Luis Sánchez',
+        '005-7891234-5',
+        '1998-08-17',
+        'O-',
+        2,
+        3,
+        'Masculino',
+        'luis.sanchez@cruba.edu.do',
+        1
+    ),
+    (
+        6,
+        '',
+        'Sofía Ramírez',
+        '006-6549873-2',
+        '1999-04-05',
+        'A+',
+        3,
+        6,
+        'Femenino',
+        'sofia.ramirez@cruba.edu.do',
+        1
+    ),
+    (
+        7,
+        '',
+        '',
+        '',
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        '',
+        1
+    );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `libros`
+--
+
+CREATE TABLE `libros` (
+    `id_libro` int(11) NOT NULL AUTO_INCREMENT,
+    `titulo` varchar(100) NOT NULL,
+    `foto` VARCHAR(255) not null,
+    `autor` varchar(100) NOT NULL,
+    `id_categoria` int(11) NOT NULL,
+    `cantidad_disponible` int(11) NOT NULL DEFAULT '1',
+    `anio_publicacion` int(11) DEFAULT NULL,
+    `isbn` varchar(20) DEFAULT NULL,
+    PRIMARY KEY (`id_libro`),
+    FOREIGN KEY (`id_categoria`) REFERENCES `categorias_libros` (`id_categoria`)
+);
+
+--
+-- Volcado de datos para la tabla `libros`
+--
+
+INSERT INTO
+    `libros` (
+        `id_libro`,
+        `titulo`,
+        `autor`,
+        `id_categoria`,
+        `cantidad_disponible`,
+        `anio_publicacion`,
+        `isbn`
+    )
+VALUES (
+        1,
+        'Física Universitaria',
+        'Sears & Zemansky',
+        1,
+        5,
+        2016,
+        '978-6073234567'
+    ),
+    (
+        2,
+        'Cien años de soledad',
+        'Gabriel García Márquez',
+        2,
+        3,
+        1967,
+        '978-0307474728'
+    ),
+    (
+        3,
+        'Python para todos',
+        'Charles Severance',
+        3,
+        2,
+        2016,
+        '978-0983555890'
+    ),
+    (
+        4,
+        'Anatomía de Gray',
+        'Henry Gray',
+        4,
+        2,
+        2015,
+        '978-8445822196'
+    ),
+    (
+        5,
+        'Breve historia del mundo',
+        'Ernst Gombrich',
+        5,
+        3,
+        1999,
+        '978-8430606171'
+    ),
+    (
+        6,
+        'Padre Rico, Padre Pobre',
+        'Robert Kiyosaki',
+        6,
+        6,
+        1997,
+        '978-1603961813'
+    );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `asistencia_biblioteca`
+--
 CREATE TABLE `asistencia_biblioteca` (
-    `id_asistencia` int(11) NOT NULL,
+    `id_asistencia` int(11) NOT NULL AUTO_INCREMENT,
     `id_estudiante` int(11) NOT NULL,
     `fecha` date NOT NULL,
     `hora_entrada` time NOT NULL,
-    `hora_salida` time DEFAULT NULL
+    `hora_salida` time DEFAULT NULL,
+    PRIMARY KEY (`id_asistencia`),
+    FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`)
 );
 
 --
@@ -326,372 +779,10 @@ VALUES (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `categorias_libros`
---
-
-CREATE TABLE `categorias_libros` (
-    `id_categoria` int(11) NOT NULL,
-    `nombre` varchar(50) NOT NULL,
-    `descripcion` text
-);
-
---
--- Volcado de datos para la tabla `categorias_libros`
---
-
-INSERT INTO
-    `categorias_libros` (
-        `id_categoria`,
-        `nombre`,
-        `descripcion`
-    )
-VALUES (
-        1,
-        'Ciencias',
-        'Libros sobre ciencias naturales y exactas'
-    ),
-    (
-        2,
-        'Literatura',
-        'Obras literarias clásicas y contemporáneas'
-    ),
-    (
-        3,
-        'Tecnología',
-        'Libros sobre tecnología e informática'
-    ),
-    (
-        4,
-        'Salud',
-        'Libros sobre medicina y ciencias de la salud'
-    ),
-    (
-        5,
-        'Historia',
-        'Libros sobre eventos históricos'
-    ),
-    (
-        6,
-        'Negocios',
-        'Libros sobre administración y economía'
-    );
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `escuelas`
---
-
-CREATE TABLE `escuelas` (
-    `id_escuela` int(11) NOT NULL,
-    `nombre` varchar(100) NOT NULL,
-    `id_facultad` int(11) DEFAULT NULL,
-    `descripcion` text,
-    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-);
-
---
--- Volcado de datos para la tabla `escuelas`
---
-
-INSERT INTO
-    `escuelas` (
-        `id_escuela`,
-        `nombre`,
-        `id_facultad`,
-        `descripcion`,
-        `created_at`
-    )
-VALUES (
-        1,
-        'Escuela de Matemáticas',
-        1,
-        'Programas de matemáticas puras y aplicadas',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        2,
-        'Escuela de Física',
-        1,
-        'Estudios en física teórica y experimental',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        3,
-        'Escuela de Ingeniería Civil',
-        2,
-        'Formación en construcción e infraestructura',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        4,
-        'Escuela de Ingeniería de Sistemas',
-        2,
-        'Ciencias de la computación y TI',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        5,
-        'Escuela de Medicina Humana',
-        3,
-        'Formación de médicos cirujanos',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        6,
-        'Escuela de Enfermería',
-        3,
-        'Formación de profesionales en enfermería',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        7,
-        'Escuela de Literatura',
-        4,
-        'Estudios lingüísticos y literarios',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        8,
-        'Escuela de Historia',
-        4,
-        'Investigación histórica y antropológica',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        9,
-        'Escuela de Derecho Civil',
-        5,
-        'Especialización en derecho privado',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        10,
-        'Escuela de Derecho Penal',
-        5,
-        'Especialización en derecho público',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        11,
-        'Escuela de Economía',
-        6,
-        'Teoría económica y análisis financiero',
-        '2025-06-13 20:01:31'
-    ),
-    (
-        12,
-        'Escuela de Administración',
-        6,
-        'Gestión empresarial y emprendimiento',
-        '2025-06-13 20:01:31'
-    );
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `estudiantes`
---
-
-CREATE TABLE `estudiantes` (
-    `id_estudiante` int(11) NOT NULL AUTO_INCREMENT,
-    `foto` text NOT NULL,
-    `nombre` varchar(100) NOT NULL,
-    `cedula` varchar(20) NOT NULL,
-    `fecha_nacimiento` date DEFAULT NULL,
-    `tipo_sangre` varchar(5) DEFAULT NULL,
-    `id_facultad` int(11) DEFAULT NULL,
-    `id_escuela` int(11) DEFAULT NULL,
-    `genero` enum('Masculino', 'Femenino') DEFAULT NULL,
-    `correo` varchar(100) NOT NULL,
-    `activo` tinyint(1) DEFAULT '1',
-    PRIMARY KEY (`id_estudiante`),
-    UNIQUE KEY `cedula` (`cedula`),
-    KEY `id_facultad` (`id_facultad`),
-    KEY `id_escuela` (`id_escuela`),
-    CONSTRAINT `estudiantes_ibfk_1` FOREIGN KEY (`id_facultad`) REFERENCES `facultades` (`id_facultad`),
-    CONSTRAINT `estudiantes_ibfk_2` FOREIGN KEY (`id_escuela`) REFERENCES `escuelas` (`id_escuela`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
-
---
--- Volcado de datos para la tabla `estudiantes`
---
-
-INSERT INTO
-    `estudiantes` (
-        `id_estudiante`,
-        `foto`,
-        `nombre`,
-        `cedula`,
-        `fecha_nacimiento`,
-        `tipo_sangre`,
-        `id_facultad`,
-        `id_escuela`,
-        `genero`,
-        `correo`,
-        `activo`
-    )
-VALUES (
-        1,
-        '',
-        'Juan Pérez',
-        '001-1234567-8',
-        '1998-05-15',
-        'O+',
-        2,
-        4,
-        'Masculino',
-        'juan.perez@cruba.edu.do',
-        1
-    ),
-    (
-        2,
-        '',
-        'María Rodríguez',
-        '002-9876543-1',
-        '1999-07-22',
-        'A-',
-        3,
-        5,
-        'Femenino',
-        'maria.rodriguez@cruba.edu.do',
-        1
-    ),
-    (
-        3,
-        '',
-        'Carlos García',
-        '003-4567890-2',
-        '2000-02-10',
-        'B+',
-        6,
-        12,
-        'Masculino',
-        'carlos.garcia@cruba.edu.do',
-        1
-    ),
-    (
-        4,
-        '',
-        'Ana Martínez',
-        '004-3216549-7',
-        '1997-11-30',
-        'AB+',
-        4,
-        7,
-        'Femenino',
-        'ana.martinez@cruba.edu.do',
-        1
-    ),
-    (
-        5,
-        '',
-        'Luis Sánchez',
-        '005-7891234-5',
-        '1998-08-17',
-        'O-',
-        2,
-        3,
-        'Masculino',
-        'luis.sanchez@cruba.edu.do',
-        1
-    ),
-    (
-        6,
-        '',
-        'Sofía Ramírez',
-        '006-6549873-2',
-        '1999-04-05',
-        'A+',
-        3,
-        6,
-        'Femenino',
-        'sofia.ramirez@cruba.edu.do',
-        1
-    ),
-    (
-        7,
-        '',
-        '',
-        '',
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        '',
-        1
-    );
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `facultades`
---
-
-CREATE TABLE `facultades` (
-    `id_facultad` int(11) NOT NULL,
-    `nombre` varchar(100) NOT NULL,
-    `descripcion` text,
-    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-);
-
---
--- Volcado de datos para la tabla `facultades`
---
-
-INSERT INTO
-    `facultades` (
-        `id_facultad`,
-        `nombre`,
-        `descripcion`,
-        `created_at`
-    )
-VALUES (
-        1,
-        'Facultad de Ciencias',
-        'Dedicada a las ciencias básicas y naturales',
-        '2025-06-13 20:00:57'
-    ),
-    (
-        2,
-        'Facultad de Ingeniería',
-        'Formación en diversas ramas de la ingeniería',
-        '2025-06-13 20:00:57'
-    ),
-    (
-        3,
-        'Facultad de Medicina',
-        'Formación de profesionales de la salud',
-        '2025-06-13 20:00:57'
-    ),
-    (
-        4,
-        'Facultad de Humanidades',
-        'Estudios en artes, letras y ciencias sociales',
-        '2025-06-13 20:00:57'
-    ),
-    (
-        5,
-        'Facultad de Derecho',
-        'Formación en ciencias jurídicas',
-        '2025-06-13 20:00:57'
-    ),
-    (
-        6,
-        'Facultad de Economía',
-        'Estudios económicos y empresariales',
-        '2025-06-13 20:00:57'
-    );
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `historial_modificaciones`
 --
-
 CREATE TABLE `historial_modificaciones` (
-    `id_historial` int(11) NOT NULL,
+    `id_historial` int(11) NOT NULL AUTO_INCREMENT,
     `tipo` enum(
         'asistencia',
         'computadora',
@@ -701,7 +792,9 @@ CREATE TABLE `historial_modificaciones` (
     `accion` varchar(50) NOT NULL,
     `motivo` text NOT NULL,
     `id_admin` int(11) NOT NULL,
-    `fecha` datetime NOT NULL
+    `fecha` datetime NOT NULL,
+    PRIMARY KEY (`id_historial`),
+    FOREIGN KEY (`id_admin`) REFERENCES `administradores` (`id_admin`)
 );
 
 --
@@ -723,7 +816,7 @@ VALUES (
         'computadora',
         12,
         'Registró fin de uso',
-        'te haz pasado del tiempo',
+        'Te has pasado del tiempo',
         1,
         '2025-06-07 03:05:47'
     ),
@@ -732,194 +825,63 @@ VALUES (
         'asistencia',
         26,
         'Registró salida',
-        'porq me dio',
+        'Por qué me dio',
         1,
         '2025-06-11 16:39:37'
-    );
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `libros`
---
-
-CREATE TABLE `libros` (
-    `id_libro` int(11) NOT NULL,
-    `titulo` varchar(100) NOT NULL,
-    `autor` varchar(100) NOT NULL,
-    `id_categoria` int(11) NOT NULL,
-    `cantidad_disponible` int(11) NOT NULL DEFAULT '1',
-    `anio_publicacion` int(11) DEFAULT NULL,
-    `isbn` varchar(20) DEFAULT NULL
-);
-
---
--- Volcado de datos para la tabla `libros`
---
-
-INSERT INTO
-    `libros` (
-        `id_libro`,
-        `titulo`,
-        `autor`,
-        `id_categoria`,
-        `cantidad_disponible`,
-        `anio_publicacion`,
-        `isbn`
-    )
-VALUES (
-        1,
-        'Física Universitaria',
-        'Sears & Zemansky',
-        1,
-        5,
-        2016,
-        '978-6073234567'
-    ),
-    (
-        2,
-        'Cien años de soledad',
-        'Gabriel García Márquez',
-        2,
-        3,
-        1967,
-        '978-0307474728'
     ),
     (
         3,
-        'Python para todos',
-        'Charles Severance',
-        3,
-        2,
-        2016,
-        '978-0983555890'
+        'prestamo',
+        6,
+        'Registró devolución',
+        'Libro en buen estado',
+        1,
+        '2023-11-15 14:30:00'
     ),
     (
         4,
-        'Anatomía de Gray',
-        'Henry Gray',
-        4,
-        2,
-        2015,
-        '978-8445822196'
-    ),
-    (
-        5,
-        'Breve historia del mundo',
-        'Ernst Gombrich',
-        5,
-        3,
-        1999,
-        '978-8430606171'
-    ),
-    (
-        6,
-        'Padre Rico, Padre Pobre',
-        'Robert Kiyosaki',
-        6,
-        6,
-        1997,
-        '978-1603961813'
-    );
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `prestamos_libros`
---
-
-CREATE TABLE `prestamos_libros` (
-    `id_prestamo` int(11) NOT NULL,
-    `id_solicitud` int(11) NOT NULL,
-    `fecha_prestamo` datetime NOT NULL,
-    `fecha_devolucion_esperada` datetime NOT NULL,
-    `fecha_devolucion_real` datetime DEFAULT NULL,
-    `estado` enum(
-        'Prestado',
-        'Devuelto',
-        'Atrasado',
-        'Perdido'
-    ) DEFAULT 'Prestado',
-    `observaciones` text
-);
-
---
--- Volcado de datos para la tabla `prestamos_libros`
---
-
-INSERT INTO
-    `prestamos_libros` (
-        `id_prestamo`,
-        `id_solicitud`,
-        `fecha_prestamo`,
-        `fecha_devolucion_esperada`,
-        `fecha_devolucion_real`,
-        `estado`,
-        `observaciones`
-    )
-VALUES (
+        'asistencia',
+        27,
+        'Registró entrada',
+        'Por qué me dio',
         1,
-        1,
-        '2023-11-02 09:15:00',
-        '2023-11-16 09:15:00',
-        '2023-11-15 14:30:00',
-        'Devuelto',
-        'Libro en buen estado'
-    ),
-    (
-        2,
-        2,
-        '2023-11-03 10:20:00',
-        '2023-11-17 10:20:00',
-        '2023-11-20 11:45:00',
-        'Atrasado',
-        'Devuelto con 3 días de retraso'
-    ),
-    (
-        3,
-        3,
-        '2023-11-04 08:45:00',
-        '2023-11-18 08:45:00',
-        '2025-06-17 00:00:00',
-        'Prestado',
-        'Préstamo vigente'
-    ),
-    (
-        4,
-        4,
-        '2023-11-06 14:10:00',
-        '2023-11-20 14:10:00',
-        NULL,
-        'Prestado',
-        'Renovado por 1 semana'
+        '2025-06-13 04:07:09'
     ),
     (
         5,
-        6,
-        '2023-11-07 10:30:00',
-        '2023-11-21 10:30:00',
-        '2023-11-21 09:15:00',
-        'Devuelto',
-        'Sin observaciones'
+        'computadora',
+        13,
+        'Registró fin de uso',
+        'Te has pasado del tiempo',
+        1,
+        '2025-06-09 16:12:19'
     ),
     (
         6,
+        'asistencia',
+        28,
+        'Registró salida',
+        'Por qué me dio',
+        1,
+        '2025-06-13 04:54:30'
+    ),
+    (
+        7,
+        'prestamo',
         2,
-        '2023-12-01 09:00:00',
-        '2023-12-15 09:00:00',
-        NULL,
-        'Prestado',
-        'Segundo préstamo del mismo libro'
+        'Registró préstamo',
+        'Aprobado para préstamo por 5 días',
+        1,
+        '2023-10-01 09:35:00'
     );
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `solicitudes_libros`
---
 
 CREATE TABLE `solicitudes_libros` (
-    `id_solicitud` int(11) NOT NULL,
+    `id_solicitud` int(11) NOT NULL AUTO_INCREMENT,
     `id_estudiante` int(11) NOT NULL,
     `id_libro` int(11) NOT NULL,
     `fecha_solicitud` datetime NOT NULL,
@@ -935,7 +897,11 @@ CREATE TABLE `solicitudes_libros` (
     `respuesta` text,
     `id_aprobador` int(11) DEFAULT NULL,
     `fecha_entrega` datetime DEFAULT NULL,
-    `fecha_devolucion` datetime DEFAULT NULL
+    `fecha_devolucion` datetime DEFAULT NULL,
+    PRIMARY KEY (`id_solicitud`),
+    FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`),
+    FOREIGN KEY (`id_libro`) REFERENCES `libros` (`id_libro`),
+    FOREIGN KEY (`id_aprobador`) REFERENCES `administradores` (`id_admin`)
 );
 
 --
@@ -1064,16 +1030,106 @@ VALUES (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `uso_computadoras`
+-- Estructura de tabla para la tabla `prestamos_libros`
+--
+CREATE TABLE `prestamos_libros` (
+    `id_prestamo` int(11) NOT NULL AUTO_INCREMENT,
+    `id_solicitud` int(11) NOT NULL,
+    `fecha_prestamo` datetime NOT NULL,
+    `fecha_devolucion_esperada` datetime NOT NULL,
+    `fecha_devolucion_real` datetime DEFAULT NULL,
+    `estado` enum(
+        'Prestado',
+        'Devuelto',
+        'Atrasado',
+        'Perdido'
+    ) DEFAULT 'Prestado',
+    `observaciones` text,
+    PRIMARY KEY (`id_prestamo`),
+    FOREIGN KEY (`id_solicitud`) REFERENCES `solicitudes_libros` (`id_solicitud`)
+);
+
+--
+-- Volcado de datos para la tabla `prestamos_libros`
 --
 
+INSERT INTO
+    `prestamos_libros` (
+        `id_prestamo`,
+        `id_solicitud`,
+        `fecha_prestamo`,
+        `fecha_devolucion_esperada`,
+        `fecha_devolucion_real`,
+        `estado`,
+        `observaciones`
+    )
+VALUES (
+        1,
+        1,
+        '2023-11-02 09:15:00',
+        '2023-11-16 09:15:00',
+        '2023-11-15 14:30:00',
+        'Devuelto',
+        'Libro en buen estado'
+    ),
+    (
+        2,
+        2,
+        '2023-11-03 10:20:00',
+        '2023-11-17 10:20:00',
+        '2023-11-20 11:45:00',
+        'Atrasado',
+        'Devuelto con 3 días de retraso'
+    ),
+    (
+        3,
+        3,
+        '2023-11-04 08:45:00',
+        '2023-11-18 08:45:00',
+        NULL,
+        'Prestado',
+        'Préstamo vigente'
+    ),
+    (
+        4,
+        4,
+        '2023-11-06 14:10:00',
+        '2023-11-20 14:10:00',
+        NULL,
+        'Prestado',
+        'Renovado por 1 semana'
+    ),
+    (
+        5,
+        6,
+        '2023-11-07 10:30:00',
+        '2023-11-21 10:30:00',
+        '2023-11-21 09:15:00',
+        'Devuelto',
+        'Sin observaciones'
+    ),
+    (
+        6,
+        2,
+        '2023-12-01 09:00:00',
+        '2023-12-15 09:00:00',
+        NULL,
+        'Prestado',
+        'Segundo préstamo del mismo libro'
+    );
+
+--
+-- Estructura de tabla para la tabla `uso_computadoras`
+
 CREATE TABLE `uso_computadoras` (
-    `id_uso` int(11) NOT NULL,
+    `id_uso` int(11) NOT NULL AUTO_INCREMENT,
     `id_estudiante` int(11) NOT NULL,
     `fecha` date NOT NULL,
     `hora_inicio` time NOT NULL,
     `hora_fin` time DEFAULT NULL,
-    `computadora_id` int(11) NOT NULL
+    `computadora_id` int(11) NOT NULL,
+    PRIMARY KEY (`id_uso`),
+    FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`)
 );
 
 --
@@ -1197,207 +1253,3 @@ VALUES (
 --
 -- Índices para tablas volcadas
 --
-
---
--- Indices de la tabla `administradores`
---
-ALTER TABLE `administradores` ADD PRIMARY KEY (`id_admin`);
-
---
--- Indices de la tabla `asistencia_biblioteca`
---
-ALTER TABLE `asistencia_biblioteca`
-ADD PRIMARY KEY (`id_asistencia`),
-ADD KEY `id_estudiante` (`id_estudiante`);
-
---
--- Indices de la tabla `categorias_libros`
---
-ALTER TABLE `categorias_libros` ADD PRIMARY KEY (`id_categoria`);
-
---
--- Indices de la tabla `escuelas`
---
-ALTER TABLE `escuelas`
-ADD PRIMARY KEY (`id_escuela`),
-ADD KEY `id_facultad` (`id_facultad`);
-
---
--- Indices de la tabla `estudiantes`
---
-ALTER TABLE `estudiantes`
-ADD PRIMARY KEY (`id_estudiante`),
-ADD UNIQUE KEY `cedula` (`cedula`);
-
---
--- Indices de la tabla `facultades`
---
-ALTER TABLE `facultades` ADD PRIMARY KEY (`id_facultad`);
-
---
--- Indices de la tabla `historial_modificaciones`
---
-ALTER TABLE `historial_modificaciones`
-ADD PRIMARY KEY (`id_historial`),
-ADD KEY `id_admin` (`id_admin`);
-
---
--- Indices de la tabla `libros`
---
-ALTER TABLE `libros`
-ADD PRIMARY KEY (`id_libro`),
-ADD KEY `id_categoria` (`id_categoria`);
-
---
--- Indices de la tabla `prestamos_libros`
---
-ALTER TABLE `prestamos_libros`
-ADD PRIMARY KEY (`id_prestamo`),
-ADD KEY `id_solicitud` (`id_solicitud`);
-
---
--- Indices de la tabla `solicitudes_libros`
---
-ALTER TABLE `solicitudes_libros`
-ADD PRIMARY KEY (`id_solicitud`),
-ADD KEY `id_estudiante` (`id_estudiante`),
-ADD KEY `id_libro` (`id_libro`),
-ADD KEY `id_aprobador` (`id_aprobador`);
-
---
--- Indices de la tabla `uso_computadoras`
---
-ALTER TABLE `uso_computadoras`
-ADD PRIMARY KEY (`id_uso`),
-ADD KEY `id_estudiante` (`id_estudiante`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `administradores`
---
-ALTER TABLE `administradores`
-MODIFY `id_admin` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 4;
-
---
--- AUTO_INCREMENT de la tabla `asistencia_biblioteca`
---
-ALTER TABLE `asistencia_biblioteca`
-MODIFY `id_asistencia` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 36;
-
---
--- AUTO_INCREMENT de la tabla `categorias_libros`
---
-ALTER TABLE `categorias_libros`
-MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 7;
-
---
--- AUTO_INCREMENT de la tabla `escuelas`
---
-ALTER TABLE `escuelas`
-MODIFY `id_escuela` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 13;
-
---
--- AUTO_INCREMENT de la tabla `estudiantes`
---
-ALTER TABLE `estudiantes`
-MODIFY `id_estudiante` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 8;
-
---
--- AUTO_INCREMENT de la tabla `facultades`
---
-ALTER TABLE `facultades`
-MODIFY `id_facultad` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 7;
-
---
--- AUTO_INCREMENT de la tabla `historial_modificaciones`
---
-ALTER TABLE `historial_modificaciones`
-MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 3;
-
---
--- AUTO_INCREMENT de la tabla `libros`
---
-ALTER TABLE `libros`
-MODIFY `id_libro` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 7;
-
---
--- AUTO_INCREMENT de la tabla `prestamos_libros`
---
-ALTER TABLE `prestamos_libros`
-MODIFY `id_prestamo` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 7;
-
---
--- AUTO_INCREMENT de la tabla `solicitudes_libros`
---
-ALTER TABLE `solicitudes_libros`
-MODIFY `id_solicitud` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 9;
-
---
--- AUTO_INCREMENT de la tabla `uso_computadoras`
---
-ALTER TABLE `uso_computadoras`
-MODIFY `id_uso` int(11) NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 14;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `asistencia_biblioteca`
---
-ALTER TABLE `asistencia_biblioteca`
-ADD CONSTRAINT `asistencia_biblioteca_ibfk_1` FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`);
-
---
--- Filtros para la tabla `escuelas`
---
-ALTER TABLE `escuelas`
-ADD CONSTRAINT `escuelas_ibfk_1` FOREIGN KEY (`id_facultad`) REFERENCES `facultades` (`id_facultad`);
-
---
--- Filtros para la tabla `historial_modificaciones`
---
-ALTER TABLE `historial_modificaciones`
-ADD CONSTRAINT `historial_modificaciones_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `administradores` (`id_admin`);
-
---
--- Filtros para la tabla `libros`
---
-ALTER TABLE `libros`
-ADD CONSTRAINT `libros_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categorias_libros` (`id_categoria`);
-
---
--- Filtros para la tabla `prestamos_libros`
---
-ALTER TABLE `prestamos_libros`
-ADD CONSTRAINT `prestamos_libros_ibfk_1` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitudes_libros` (`id_solicitud`);
-
---
--- Filtros para la tabla `solicitudes_libros`
---
-ALTER TABLE `solicitudes_libros`
-ADD CONSTRAINT `solicitudes_libros_ibfk_1` FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`),
-ADD CONSTRAINT `solicitudes_libros_ibfk_2` FOREIGN KEY (`id_libro`) REFERENCES `libros` (`id_libro`),
-ADD CONSTRAINT `solicitudes_libros_ibfk_3` FOREIGN KEY (`id_aprobador`) REFERENCES `administradores` (`id_admin`);
-
---
--- Filtros para la tabla `uso_computadoras`
---
-ALTER TABLE `uso_computadoras`
-ADD CONSTRAINT `uso_computadoras_ibfk_1` FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`);
-
-COMMIT;
