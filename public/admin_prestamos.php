@@ -233,17 +233,27 @@ if (!empty($filtro_busqueda)) {
 }
 
 try {
-    $sql = "SELECT s.*, e.nombre as estudiante, e.cedula, l.titulo as libro, 
-                   p.fecha_prestamo, p.fecha_devolucion_esperada, p.fecha_devolucion_real, p.estado as estado_prestamo,
-                   a.nombre as aprobador,
-                   e.facultad, e.escuela
-            FROM solicitudes_libros s
-            JOIN estudiantes e ON s.id_estudiante = e.id_estudiante
-            JOIN libros l ON s.id_libro = l.id_libro
-            LEFT JOIN prestamos_libros p ON s.id_solicitud = p.id_solicitud
-            LEFT JOIN administradores a ON s.id_aprobador = a.id_admin
-            $where
-            ORDER BY s.fecha_solicitud DESC";
+    $sql = "SELECT s.*, 
+               e.nombre AS estudiante, 
+               e.cedula, 
+               l.titulo AS libro, 
+               p.fecha_prestamo, 
+               p.fecha_devolucion_esperada, 
+               p.fecha_devolucion_real, 
+               p.estado AS estado_prestamo,
+               a.nombre AS aprobador,
+               f.nombre AS facultad,
+               esc.nombre AS escuela
+        FROM solicitudes_libros s
+        JOIN estudiantes e ON s.id_estudiante = e.id_estudiante
+        JOIN libros l ON s.id_libro = l.id_libro
+        LEFT JOIN prestamos_libros p ON s.id_solicitud = p.id_solicitud
+        LEFT JOIN administradores a ON s.id_aprobador = a.id_admin
+        LEFT JOIN facultades f ON e.id_facultad = f.id_facultad
+        LEFT JOIN escuelas esc ON e.id_escuela = esc.id_escuela
+        $where
+        ORDER BY s.fecha_solicitud DESC";
+
 
     $stmt = $conn->prepare($sql);
 
@@ -287,7 +297,6 @@ try {
 // Obtener estudiantes actualmente en la biblioteca
 try {
     $fecha_actual = date('Y-m-d');
-<<<<<<< Updated upstream
     $stmt = $conn->prepare("SELECT a.id_asistencia, e.nombre, e.cedula, 
                         f.nombre AS facultad, esc.nombre AS escuela, 
                         e.correo, a.hora_entrada 
@@ -297,13 +306,7 @@ try {
                       LEFT JOIN escuelas esc ON e.id_escuela = esc.id_escuela
                       WHERE a.fecha = :fecha AND a.hora_salida IS NULL
                       ORDER BY a.hora_entrada DESC");
-=======
-    $stmt = $conn->prepare("SELECT a.id_asistencia, e.nombre, e.cedula, e.facultad, e.escuela, e.correo, a.hora_entrada 
-                          FROM asistencia_biblioteca a
-                          JOIN estudiantes e ON a.id_estudiante = e.id_estudiante
-                          WHERE a.fecha = :fecha AND a.hora_salida IS NULL
-                          ORDER BY a.hora_entrada DESC");
->>>>>>> Stashed changes
+
     $stmt->bindParam(':fecha', $fecha_actual);
     $stmt->execute();
     $en_biblioteca = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -325,23 +328,17 @@ try {
 
 // Obtener estudiantes actualmente usando computadoras (incluyendo id_uso)
 try {
-<<<<<<< Updated upstream
+    $fecha_actual = date('Y-m-d');
     $stmt = $conn->prepare("SELECT u.id_uso, e.nombre, e.cedula, 
                         f.nombre AS facultad, esc.nombre AS escuela, 
-                        e.correo, u.hora_inicio, u.computadora_id 
+                        e.correo, u.computadora_id, u.hora_inicio 
                       FROM uso_computadoras u
                       JOIN estudiantes e ON u.id_estudiante = e.id_estudiante
                       LEFT JOIN facultades f ON e.id_facultad = f.id_facultad
                       LEFT JOIN escuelas esc ON e.id_escuela = esc.id_escuela
                       WHERE u.fecha = :fecha AND u.hora_fin IS NULL
                       ORDER BY u.hora_inicio DESC");
-=======
-    $stmt = $conn->prepare("SELECT u.id_uso, e.nombre, e.cedula, e.facultad, e.escuela, e.correo, u.hora_inicio, u.computadora_id 
-                          FROM uso_computadoras u
-                          JOIN estudiantes e ON u.id_estudiante = e.id_estudiante
-                          WHERE u.fecha = :fecha AND u.hora_fin IS NULL
-                          ORDER BY u.hora_inicio DESC");
->>>>>>> Stashed changes
+                      
     $stmt->bindParam(':fecha', $fecha_actual);
     $stmt->execute();
     $en_computadoras = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -409,68 +406,37 @@ try {
                                             unset($_SESSION['error']); ?></div>
         <?php endif; ?>
 
-        <!-- Sección: Estudiantes activos -->
-        <div class="row mb-4">
-            <!-- Estudiantes en la biblioteca -->
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-people-fill"></i> Estudiantes en la Biblioteca
-                            <span class="badge bg-white text-info"><?php echo count($en_biblioteca); ?></span>
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <?php if (count($en_biblioteca) > 0): ?>
-<<<<<<< Updated upstream
-
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Estudiante</th>
-                                            <th>Cédula</th>
-                                            <th>Facultad</th>
-                                            <th>Hora Entrada</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($en_biblioteca as $estudiante): ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
-                                                <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
-                                                <td><?php echo htmlspecialchars($estudiante['facultad']); ?></td>
-                                                <td><?php echo date('H:i', strtotime($estudiante['hora_entrada'])); ?></td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                        data-bs-target="#modalAsistencia<?php echo $estudiante['id_asistencia']; ?>">
-                                                        <i class="bi bi-gear"></i> Modificar
-                                                    </button>
-                                                </td>
-                                            </tr>
-=======
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Estudiante</th>
-                                        <th>Cédula</th>
-                                        <th>Facultad</th>
-                                        <th>Escuela</th>
-                                        <th>Hora Entrada</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($en_biblioteca as $estudiante): ?>
+      <div class="row mb-4">
+    <!-- Estudiantes en la biblioteca -->
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-people-fill"></i> Estudiantes en la Biblioteca
+                    <span class="badge bg-white text-info"><?php echo count($en_biblioteca); ?></span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <?php if (count($en_biblioteca) > 0): ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Estudiante</th>
+                                    <th>Cédula</th>
+                                    <th>Facultad</th>
+                                    <th>Escuela</th>
+                                    <th>Hora Entrada</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($en_biblioteca as $estudiante): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
                                         <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['facultad'] ?? 'No asignada'); ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($estudiante['escuela'] ?? 'No asignada'); ?>
-                                        </td>
+                                        <td><?php echo htmlspecialchars($estudiante['facultad'] ?? 'No asignada'); ?></td>
+                                        <td><?php echo htmlspecialchars($estudiante['escuela'] ?? 'No asignada'); ?></td>
                                         <td><?php echo date('H:i', strtotime($estudiante['hora_entrada'])); ?></td>
                                         <td>
                                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
@@ -479,7 +445,6 @@ try {
                                             </button>
                                         </td>
                                     </tr>
->>>>>>> Stashed changes
 
                                     <!-- Modal para modificar asistencia -->
                                     <div class="modal fade"
@@ -508,159 +473,36 @@ try {
                                                         <div class="mb-3">
                                                             <label class="form-label">Acción a realizar</label>
                                                             <select class="form-select" name="accion" required>
-                                                                <option value="registrar_salida">Registrar salida
-                                                                </option>
-                                                                <option value="eliminar_registro">Eliminar registro
-                                                                </option>
+                                                                <option value="registrar_salida">Registrar salida</option>
+                                                                <option value="eliminar_registro">Eliminar registro</option>
                                                             </select>
                                                         </div>
-
-                                                        <div class="mb-3 modal-motivo">
-                                                            <label
-                                                                for="motivoAsistencia<?php echo $estudiante['id_asistencia']; ?>"
-                                                                class="form-label">Motivo de la modificación</label>
-                                                            <textarea class="form-control"
-                                                                id="motivoAsistencia<?php echo $estudiante['id_asistencia']; ?>"
-                                                                name="motivo" required></textarea>
-                                                        </div>
-
                                                         <input type="hidden" name="id_asistencia"
                                                             value="<?php echo $estudiante['id_asistencia']; ?>">
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Cancelar</button>
-                                                        <button type="submit" name="modificar_asistencia"
-                                                            class="btn btn-primary">Confirmar</button>
+                                                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php else: ?>
-                        <div class="alert alert-info m-3">No hay estudiantes registrados en la biblioteca actualmente.
-                        </div>
-                        <?php endif; ?>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </div>
-
-            <!-- Estudiantes en computadoras -->
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-pc-display"></i> Estudiantes en Computadoras
-                            <span class="badge bg-white text-success"><?php echo count($en_computadoras); ?></span>
-                        </h5>
+                <?php else: ?>
+                    <div class="p-3">
+                        <p class="text-muted mb-0">No hay estudiantes en la biblioteca actualmente.</p>
                     </div>
-                    <div class="card-body p-0">
-                        <?php if (count($en_computadoras) > 0): ?>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Estudiante</th>
-                                        <th>Cédula</th>
-                                        <th>Facultad</th>
-                                        <th>Escuela</th>
-                                        <th>Computadora</th>
-                                        <th>Hora Inicio</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($en_computadoras as $estudiante): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($estudiante['nombre']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
-                                        <td><?php echo htmlspecialchars($estudiante['facultad'] ?? 'No asignada'); ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($estudiante['escuela'] ?? 'No asignada'); ?>
-                                        </td>
-                                        <td>#<?php echo htmlspecialchars($estudiante['computadora_id']); ?></td>
-                                        <td><?php echo date('H:i', strtotime($estudiante['hora_inicio'])); ?></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#modalComputadora<?php echo $estudiante['id_uso']; ?>">
-                                                <i class="bi bi-gear"></i> Modificar
-                                            </button>
-                                        </td>
-                                    </tr>
-
-                                    <!-- Modal para modificar uso de computadora -->
-                                    <div class="modal fade" id="modalComputadora<?php echo $estudiante['id_uso']; ?>"
-                                        tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Modificar Uso de Computadora</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <form method="post" action="admin_prestamos.php">
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Estudiante:
-                                                                <?php echo htmlspecialchars($estudiante['nombre']); ?></label>
-                                                            <p><strong>Cédula:</strong>
-                                                                <?php echo htmlspecialchars($estudiante['cedula']); ?>
-                                                            </p>
-                                                            <p><strong>Computadora #:</strong>
-                                                                <?php echo htmlspecialchars($estudiante['computadora_id']); ?>
-                                                            </p>
-                                                            <p><strong>Hora inicio:</strong>
-                                                                <?php echo date('H:i', strtotime($estudiante['hora_inicio'])); ?>
-                                                            </p>
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Acción a realizar</label>
-                                                            <select class="form-select" name="accion" required>
-                                                                <option value="registrar_fin">Registrar fin de uso
-                                                                </option>
-                                                                <option value="eliminar_registro">Eliminar registro
-                                                                </option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="mb-3 modal-motivo">
-                                                            <label
-                                                                for="motivoComputadora<?php echo $estudiante['id_uso']; ?>"
-                                                                class="form-label">Motivo de la modificación</label>
-                                                            <textarea class="form-control"
-                                                                id="motivoComputadora<?php echo $estudiante['id_uso']; ?>"
-                                                                name="motivo" required></textarea>
-                                                        </div>
-
-                                                        <input type="hidden" name="id_uso"
-                                                            value="<?php echo $estudiante['id_uso']; ?>">
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cancelar</button>
-                                                        <button type="submit" name="modificar_computadora"
-                                                            class="btn btn-primary">Confirmar</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php else: ?>
-                        <div class="alert alert-info m-3">No hay estudiantes usando computadoras actualmente.</div>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
+    </div>
+</div>
+
         <!-- Sección: Estadísticas y filtros -->
         <div class="row mb-4">
             <div class="col-md-4">
