@@ -47,3 +47,18 @@ Sistema de gestión integral para la biblioteca del CRUBA que permite la adminis
 ## Próximos Pasos
 - Mejora en el sistema de reportes
 
+Actualizar php, xmapp, composer,nodejs,laravel
+
+Instalacion y configuraccion de composer
+https://www.youtube.com/watch?v=Mmfzlc55qYs
+
+Instalacion y configuracion de laravel
+https://www.youtube.com/watch?v=-uERuBkURfM
+
+Despliege de composer e lara medio meh 2.4
+https://www.youtube.com/watch?v=FV6qFOAeAC4
+2.5
+
+
+Curso Laravel
+https://www.youtube.com/watch?v=rn2LCOeNPds
